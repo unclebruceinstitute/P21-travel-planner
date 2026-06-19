@@ -20,10 +20,21 @@ nav{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,.95);backdro
 .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(transparent,var(--bg))}
 .hero h1{font-size:clamp(32px,6vw,56px);font-weight:900;margin-bottom:16px;text-shadow:0 2px 20px rgba(0,0,0,.2)}
 .hero p{font-size:clamp(16px,2.5vw,20px);opacity:.9;max-width:600px;margin:0 auto 32px}
+.hero-cta{display:inline-block;padding:16px 40px;background:#fff;color:var(--primary);border-radius:100px;font-size:18px;font-weight:800;text-decoration:none;transition:.3s;box-shadow:0 8px 32px rgba(0,0,0,.2);margin-bottom:32px}
+.hero-cta:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 40px rgba(0,0,0,.3)}
 .hero-stats{display:flex;justify-content:center;gap:48px;flex-wrap:wrap}
-.hero-stat{text-align:center}
+.hero-stat{text-align:center;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:16px 24px;border-radius:16px;border:1px solid rgba(255,255,255,.2)}
 .hero-stat .num{font-size:36px;font-weight:900;display:block}
 .hero-stat .label{font-size:14px;opacity:.8}
+.hero-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-particle{position:absolute;font-size:24px;opacity:.3;animation:floatParticle linear infinite}
+@keyframes floatParticle{0%{transform:translateY(100vh) rotate(0deg)}100%{transform:translateY(-100px) rotate(360deg)}}
+.fade-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+.fade-in-left{opacity:0;transform:translateX(-30px);transition:opacity .6s ease,transform .6s ease}
+.fade-in-left.visible{opacity:1;transform:translateX(0)}
+.fade-in-right{opacity:0;transform:translateX(30px);transition:opacity .6s ease,transform .6s ease}
+.fade-in-right.visible{opacity:1;transform:translateX(0)}
 section{max-width:1200px;margin:0 auto;padding:60px 24px}
 .section-title{font-size:28px;font-weight:800;text-align:center;margin-bottom:8px}
 .section-sub{text-align:center;color:var(--text-light);margin-bottom:40px;font-size:16px}
@@ -32,8 +43,8 @@ section{max-width:1200px;margin:0 auto;padding:60px 24px}
 .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .tab:hover:not(.active){border-color:var(--primary);color:var(--primary)}
 .dest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
-.dest-card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;cursor:pointer}
-.dest-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.12)}
+.dest-card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .3s,box-shadow .3s;cursor:pointer;position:relative}
+.dest-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 60px rgba(0,0,0,.15)}
 .dest-img{height:180px;display:flex;align-items:center;justify-content:center;font-size:72px;position:relative}
 .dest-badge{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.6);color:#fff;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;backdrop-filter:blur(4px)}
 .dest-body{padding:16px}
@@ -54,8 +65,11 @@ section{max-width:1200px;margin:0 auto;padding:60px 24px}
 .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:960px;margin:0 auto}
 .price-card{background:var(--card);border-radius:var(--radius);padding:36px 28px;text-align:center;box-shadow:var(--shadow);border:2px solid var(--border);position:relative;transition:.3s}
 .price-card:hover{transform:translateY(-6px);box-shadow:0 16px 48px rgba(0,0,0,.12)}
-.price-card.featured{border-color:var(--primary);transform:scale(1.04)}
+.price-card.featured{border-color:var(--primary);transform:scale(1.04);animation:featuredGlow 2s ease-in-out infinite alternate}
 .price-card.featured:hover{transform:scale(1.04) translateY(-6px)}
+@keyframes featuredGlow{0%{box-shadow:0 4px 24px rgba(0,102,255,.15)}100%{box-shadow:0 8px 40px rgba(0,102,255,.35),0 0 60px rgba(0,102,255,.1)}}
+.social-proof{text-align:center;margin-top:12px;font-size:13px;color:var(--primary);font-weight:600}
+.social-proof span{background:rgba(0,102,255,.08);padding:4px 12px;border-radius:100px}
 .price-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:4px 20px;border-radius:100px;font-size:12px;font-weight:700;white-space:nowrap}
 .price-icon{font-size:48px;margin-bottom:16px}
 .price-name{font-size:20px;font-weight:800;margin-bottom:4px}
@@ -207,6 +221,13 @@ section{max-width:1200px;margin:0 auto;padding:60px 24px}
 
 footer{background:var(--text);color:rgba(255,255,255,.7);text-align:center;padding:40px 24px;font-size:14px;margin-top:60px}
 footer a{color:rgba(255,255,255,.9)}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;max-width:800px;margin:0 auto 32px;text-align:left}
+.footer-col h4{color:#fff;font-size:15px;font-weight:700;margin-bottom:12px}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.6);padding:4px 0;transition:.2s}
+.footer-col a:hover{color:#fff}
+.submit-btn{display:block;width:100%;padding:18px;background:linear-gradient(135deg,var(--primary),#764ba2);color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:800;cursor:pointer;transition:.3s;margin-top:16px;box-shadow:0 8px 24px rgba(0,102,255,.3)}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,102,255,.4)}
+.submit-btn:active{transform:translateY(0)}
 @media(max-width:640px){
 .form-row{grid-template-columns:1fr}
 .hero-stats{gap:24px}
@@ -232,8 +253,10 @@ footer a{color:rgba(255,255,255,.9)}
 </nav>
 
 <div class="hero">
+<div class="hero-particles" id="heroParticles"></div>
 <h1>香港人旅遊計劃專家</h1>
 <p>輸入你嘅旅遊條件，AI 為你生成專屬行程<br>景點 · 路線 · 餐廳 · 機票 · 交通 · 全包</p>
+<a href="#booking" class="hero-cta">🚀 立即規劃旅程</a>
 <div class="hero-stats">
 <div class="hero-stat"><span class="num">50+</span><span class="label">熱門目的地</span></div>
 <div class="hero-stat"><span class="num">3</span><span class="label">方案選擇</span></div>
@@ -303,6 +326,7 @@ footer a{color:rgba(255,255,255,.9)}
 <label>💬 特別要求（選填）</label>
 <textarea id="fNotes" placeholder="例如：有老人家同行、想睇日出、唔想行太多路..."></textarea>
 </div>
+<button class="submit-btn" onclick="scrollToPricing()">🚀 生成專屬行程</button>
 </div>
 </div>
 
@@ -342,6 +366,7 @@ footer a{color:rgba(255,255,255,.9)}
 <li><span class="cross">✗</span> <span style="color:#ccc">應急資訊 / 深度貼士</span></li>
 </ul>
 <button class="price-btn primary" onclick="selectPlan('standard')">選擇標準計劃</button>
+<div class="social-proof"><span>🔥 80% 用戶選擇此方案</span></div>
 </div>
 <div class="price-card">
 <div class="price-icon">👑</div>
@@ -418,7 +443,31 @@ footer a{color:rgba(255,255,255,.9)}
 <section class="result-area" id="resultArea"></section>
 
 <footer>
-<p>✈️ 大B舅父遊世界 Uncle Bruce GoTravel © 2026 — 香港人旅遊計劃專家</p>
+<div class="footer-grid">
+<div class="footer-col">
+<h4>✈️ 大B舅父遊世界</h4>
+<p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">香港人旅遊計劃專家<br>AI 智能行程規劃<br>為你度身訂造旅程</p>
+</div>
+<div class="footer-col">
+<h4>🔗 快速連結</h4>
+<a href="#destinations">熱門目的地</a>
+<a href="#pricing">方案價錢</a>
+<a href="#booking">立即規劃</a>
+</div>
+<div class="footer-col">
+<h4>❓ 常見問題</h4>
+<a href="javascript:void(0)" onclick="alert('付款後 AI 會即時為你生成旅遊計劃，約30秒完成')">幾時收到旅遊計劃？</a>
+<a href="javascript:void(0)" onclick="alert('支援 PayMe 同 Alipay HK 兩種付款方式')">有咩付款方式？</a>
+<a href="javascript:void(0)" onclick="alert('旅遊計劃由 AI 生成，僅供參考。建議出發前再確認最新資訊')">計劃準確嗎？</a>
+</div>
+<div class="footer-col">
+<h4>📧 聯絡我們</h4>
+<a href="mailto:unclebruceinstitute@gmail.com">unclebruceinstitute@gmail.com</a>
+<a href="https://t.me/UncleBruceHermes_MacMini_bot" target="_blank">Telegram Bot</a>
+<a href="javascript:void(0)" onclick="alert('所有旅遊計劃由 AI 生成，僅供參考。付款後不設退款。')">使用條款</a>
+</div>
+</div>
+<p style="border-top:1px solid rgba(255,255,255,.1);padding-top:24px">✈️ 大B舅父遊世界 Uncle Bruce GoTravel © 2026 — 香港人旅遊計劃專家</p>
 <p style="margin-top:8px;font-size:12px">付款方式：PayMe · Alipay HK | 所有旅遊計劃由 AI 生成，僅供參考</p>
 </footer>
 
@@ -1073,7 +1122,51 @@ renderDestinations();populateDestSelect();
 const t=new Date(),n=new Date(t);n.setMonth(n.getMonth()+1);const r=new Date(n);r.setDate(r.getDate()+5);
 document.getElementById('fStart').value=n.toISOString().split('T')[0];
 document.getElementById('fEnd').value=r.toISOString().split('T')[0];
+initParticles();
+initScrollAnimations();
 });
+
+// ============ FLOATING PARTICLES ============
+function initParticles(){
+const container=document.getElementById('heroParticles');
+if(!container)return;
+const emojis=['✈️','🗼','🏖️','🌍','🗺️','⛩️','🎒','🌴','🏰','🚢','🎪','🎡','⛩️','🌺','🍣','🗼'];
+for(let i=0;i<18;i++){
+const el=document.createElement('span');
+el.className='hero-particle';
+el.textContent=emojis[i%emojis.length];
+el.style.left=Math.random()*100+'%';
+el.style.fontSize=(16+Math.random()*20)+'px';
+el.style.animationDuration=(8+Math.random()*12)+'s';
+el.style.animationDelay=(Math.random()*10)+'s';
+el.style.opacity=(0.15+Math.random()*0.2);
+container.appendChild(el);
+}
+}
+
+// ============ SCROLL ANIMATIONS ============
+function initScrollAnimations(){
+const observer=new IntersectionObserver((entries)=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+entry.target.classList.add('visible');
+observer.unobserve(entry.target);
+}
+});
+},{threshold:0.1,rootMargin:'0px 0px -50px 0px'});
+
+document.querySelectorAll('section,.booking-section,.price-card,.dest-card').forEach(el=>{
+el.classList.add('fade-in');
+observer.observe(el);
+});
+}
+
+// ============ SCROLL TO PRICING ============
+function scrollToPricing(){
+const dest=document.getElementById('fDest').value;
+if(!dest){alert('請先選擇目的地！');return;}
+document.getElementById('pricing').scrollIntoView({behavior:'smooth'});
+}
 </script>
 </body>
 </html>
