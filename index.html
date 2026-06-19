@@ -2,7 +2,13 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="大B舅父遊世界">
+<meta name="theme-color" content="#0066ff">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
 <title>大B舅父遊世界 Uncle Bruce GoTravel — 香港人旅遊計劃專家</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -279,6 +285,24 @@ footer a{color:rgba(255,255,255,.9)}
 .route-city{background:var(--bg);padding:4px 12px;border-radius:100px;font-size:13px;font-weight:600}
 .route-arrow{color:var(--primary);font-weight:800}
 .route-meta{font-size:12px;color:var(--text-light);margin-top:8px}
+/* INSTALL BANNER */
+.install-banner{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:16px 20px;z-index:1500;display:none;align-items:center;gap:14px;box-shadow:0 -4px 24px rgba(0,0,0,.2);animation:slideUp .4s ease}
+.install-banner.show{display:flex}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.install-icon{width:48px;height:48px;border-radius:12px;overflow:hidden;flex-shrink:0}
+.install-icon img{width:100%;height:100%}
+.install-info{flex:1}
+.install-title{font-size:15px;font-weight:700}
+.install-desc{font-size:12px;opacity:.7;margin-top:2px}
+.install-btns{display:flex;gap:8px;flex-shrink:0}
+.install-accept{padding:10px 20px;background:var(--primary);color:#fff;border:none;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s}
+.install-accept:hover{background:var(--primary-dark)}
+.install-dismiss{padding:10px 16px;background:transparent;color:rgba(255,255,255,.6);border:none;font-size:13px;cursor:pointer}
+@media(max-width:480px){
+.install-banner{flex-wrap:wrap}
+.install-btns{width:100%;justify-content:flex-end}
+}
+
 @media(max-width:640px){
 .form-row{grid-template-columns:1fr}
 .hero-stats{gap:24px}
@@ -299,6 +323,7 @@ footer a{color:rgba(255,255,255,.9)}
 <a href="#destinations">熱門地點</a>
 <a href="#pricing">方案價錢</a>
 <a href="#booking" class="nav-cta">立即規劃</a>
+<a href="javascript:void(0)" onclick="installApp()" style="color:var(--primary);font-weight:600;font-size:14px">📲 下載APP</a>
 </div>
 </div>
 </nav>
@@ -308,6 +333,7 @@ footer a{color:rgba(255,255,255,.9)}
 <h1>香港人旅遊計劃專家</h1>
 <p>輸入你嘅旅遊條件，AI 為你生成專屬行程<br>景點 · 路線 · 餐廳 · 機票 · 交通 · 全包</p>
 <a href="#booking" class="hero-cta">🚀 立即規劃旅程</a>
+<a href="javascript:void(0)" onclick="installApp()" class="hero-cta" style="background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.5);margin-left:12px;font-size:16px;padding:14px 32px">📲 下載 APP</a>
 <div class="hero-stats">
 <div class="hero-stat"><span class="num">27+</span><span class="label">熱門目的地</span></div>
 <div class="hero-stat"><span class="num">3</span><span class="label">方案選擇</span></div>
@@ -581,6 +607,19 @@ footer a{color:rgba(255,255,255,.9)}
 <div class="modal preview-modal">
 <button class="modal-close" onclick="closePreview()">&times;</button>
 <div id="previewContent"></div>
+</div>
+</div>
+
+<!-- Install Banner -->
+<div class="install-banner" id="installBanner">
+<div class="install-icon"><img src="icon-192.png" alt="App"></div>
+<div class="install-info">
+<div class="install-title">📱 安裝「大B舅父遊世界」APP</div>
+<div class="install-desc">加到主畫面，隨時隨地規劃旅程，支援離線瀏覽</div>
+</div>
+<div class="install-btns">
+<button class="install-dismiss" onclick="dismissInstall()">暫時唔好</button>
+<button class="install-accept" onclick="installApp()">📲 安裝 APP</button>
 </div>
 </div>
 
@@ -2010,6 +2049,62 @@ luxury:{
   extras:'五星酒店、米其林餐廳、SPA、私人導遊、VIP體驗'
 }
 };
+
+// ============ PWA INSTALL ============
+let deferredPrompt = null;
+
+// Register Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/P21-travel-planner/sw.js').catch(e=>console.log('SW reg failed:',e));
+}
+
+// Listen for beforeinstallprompt (Android/Desktop Chrome)
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show install banner if not dismissed
+  if(!localStorage.getItem('installDismissed')){
+    setTimeout(()=>document.getElementById('installBanner').classList.add('show'), 2000);
+  }
+});
+
+// iOS Safari detection — show manual install instructions
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+// Show iOS install prompt if not in standalone mode
+if(isIOS() && !isStandalone() && !localStorage.getItem('installDismissed')){
+  window.addEventListener('load', ()=>{
+    setTimeout(()=>{
+      document.getElementById('installBanner').classList.add('show');
+      document.querySelector('.install-desc').textContent = '按 Safari 底部「分享」按鈕 → 「加到主畫面」';
+    }, 3000);
+  });
+}
+
+function installApp(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice=>{
+      if(choice.outcome==='accepted'){
+        document.getElementById('installBanner').classList.remove('show');
+      }
+      deferredPrompt=null;
+    });
+  } else if(isIOS()){
+    alert('📲 安裝步驟：\n\n1. 按 Safari 底部嘅「分享」按鈕 ⬆️\n2. 向下撈，揀「加到主畫面」\n3. 按「加入」\n\n完成！APP 圖示會出現喺你嘅主畫面 🎉');
+    document.getElementById('installBanner').classList.remove('show');
+  }
+}
+
+function dismissInstall(){
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem('installDismissed','1');
+}
 </script>
 </body>
 </html>
