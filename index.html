@@ -88,6 +88,28 @@ section{max-width:1200px;margin:0 auto;padding:60px 24px}
 .pay-btn .pay-info{text-align:left}
 .pay-btn .pay-name{display:block;font-size:15px;font-weight:700}
 .pay-btn .pay-desc{font-size:12px;color:var(--text-light)}
+.pay-btns-row{display:flex;gap:10px;align-items:stretch}
+.pay-btns-row .pay-btn{flex:1}
+.pay-btn.deep-link{border-color:#00d632;background:#f0fff4}
+.pay-btn.deep-link:hover{background:#00d632;color:#fff;border-color:#00d632}
+.pay-btn.deep-link .pay-icon{background:#00d632;font-size:16px}
+.pay-btn.alipay-direct{border-color:#1677ff;background:#f0f5ff}
+.pay-btn.alipay-direct:hover{background:#1677ff;color:#fff;border-color:#1677ff}
+.pay-btn.alipay-direct .pay-icon{background:#1677ff;font-size:16px}
+.hotel-card{background:linear-gradient(135deg,#fdfcfb,#e2d1c3);border:1px solid #d4a574;border-radius:12px;padding:14px 16px;margin:10px 0;display:flex;align-items:center;gap:12px}
+.hotel-icon{font-size:28px;flex-shrink:0;width:40px;text-align:center}
+.hotel-info{flex:1}
+.hotel-name{font-weight:700;font-size:14px}
+.hotel-detail{font-size:12px;color:var(--text-light)}
+.hotel-price{font-weight:800;font-size:14px;color:var(--accent);text-align:right;white-space:nowrap}
+.hotel-stars{color:#f5a623;font-size:11px}
+.booking-links{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
+.booking-link{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;transition:.2s;border:2px solid}
+.booking-link:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.booking-link.flight{background:#1a1a2e;color:#fff;border-color:#1a1a2e}
+.booking-link.train{background:#0052cc;color:#fff;border-color:#0052cc}
+.booking-link.boat{background:#0077b6;color:#fff;border-color:#0077b6}
+.booking-link.hotel{background:#d4a574;color:#fff;border-color:#d4a574}
 .qr-area{text-align:center;padding:24px;display:none}
 .qr-area.show{display:block}
 .qr-box{width:200px;height:200px;margin:16px auto;background:#fff;border:2px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
@@ -200,7 +222,7 @@ footer a{color:rgba(255,255,255,.9)}
 
 <nav>
 <div class="nav-inner">
-<div class="logo">✈️ 遊世界 GoTravel</div>
+<div class="logo">✈️ 大B舅父遊世界 Uncle Bruce GoTravel</div>
 <div class="nav-links">
 <a href="#destinations">熱門地點</a>
 <a href="#pricing">方案價錢</a>
@@ -215,7 +237,7 @@ footer a{color:rgba(255,255,255,.9)}
 <div class="hero-stats">
 <div class="hero-stat"><span class="num">50+</span><span class="label">熱門目的地</span></div>
 <div class="hero-stat"><span class="num">3</span><span class="label">方案選擇</span></div>
-<div class="hero-stat"><span class="num">HK$10</span><span class="label">起</span></div>
+<div class="hero-stat"><span class="num">HK$5</span><span class="label">起</span></div>
 </div>
 </div>
 
@@ -292,7 +314,7 @@ footer a{color:rgba(255,255,255,.9)}
 <div class="price-icon">📋</div>
 <div class="price-name">基本計劃</div>
 <div class="price-desc">快速掌握每日行程大綱</div>
-<div class="price-amount">$10<span> / 次</span></div>
+<div class="price-amount">$5<span> / 次</span></div>
 <ul class="price-features">
 <li><span class="check">✓</span> 每日行程大綱（景點名稱）</li>
 <li><span class="check">✓</span> 建議遊覽順序</li>
@@ -309,7 +331,7 @@ footer a{color:rgba(255,255,255,.9)}
 <div class="price-icon">🗺️</div>
 <div class="price-name">標準計劃</div>
 <div class="price-desc">行程 + 餐廳 + 基本交通</div>
-<div class="price-amount">$20<span> / 次</span></div>
+<div class="price-amount">$10<span> / 次</span></div>
 <ul class="price-features">
 <li><span class="check">✓</span> 基本計劃全部內容</li>
 <li><span class="check">✓</span> 每日餐廳推薦（午/晚餐）</li>
@@ -325,7 +347,7 @@ footer a{color:rgba(255,255,255,.9)}
 <div class="price-icon">👑</div>
 <div class="price-name">尊貴計劃</div>
 <div class="price-desc">VIP 全方位旅遊規劃</div>
-<div class="price-amount">$50<span> / 次</span></div>
+<div class="price-amount">$20<span> / 次</span></div>
 <ul class="price-features">
 <li><span class="check">✓</span> 標準計劃全部內容</li>
 <li><span class="check">✓</span> 推介機票（航空公司+價錢）</li>
@@ -347,14 +369,26 @@ footer a{color:rgba(255,255,255,.9)}
 <h2>確認付款</h2>
 <div class="plan-summary" id="planSummary"></div>
 <div class="payment-methods">
+<div class="pay-btns-row">
 <button class="pay-btn payme" onclick="startPayment('payme')">
 <div class="pay-icon">P</div>
-<div class="pay-info"><span class="pay-name">PayMe</span><span class="pay-desc">HSBC PayMe 轉數快付款</span></div>
+<div class="pay-info"><span class="pay-name">PayMe QR Code</span><span class="pay-desc">掃碼付款</span></div>
 </button>
+<button class="pay-btn deep-link" onclick="directPay('payme')">
+<div class="pay-icon">P</div>
+<div class="pay-info"><span class="pay-name">PayMe 直接付款</span><span class="pay-desc">打開 PayMe App 付款</span></div>
+</button>
+</div>
+<div class="pay-btns-row">
 <button class="pay-btn alipay" onclick="startPayment('alipay')">
 <div class="pay-icon">支</div>
-<div class="pay-info"><span class="pay-name">Alipay 支付寶</span><span class="pay-desc">支付寶（香港）掃碼付款</span></div>
+<div class="pay-info"><span class="pay-name">Alipay QR Code</span><span class="pay-desc">掃碼付款</span></div>
 </button>
+<button class="pay-btn alipay-direct" onclick="directPay('alipay')">
+<div class="pay-icon">支</div>
+<div class="pay-info"><span class="pay-name">支付寶 直接付款</span><span class="pay-desc">打開支付寶 App 付款</span></div>
+</button>
+</div>
 </div>
 </div>
 <div class="qr-area" id="payStep2">
@@ -384,7 +418,7 @@ footer a{color:rgba(255,255,255,.9)}
 <section class="result-area" id="resultArea"></section>
 
 <footer>
-<p>✈️ 遊世界 GoTravel © 2026 — 香港人旅遊計劃專家</p>
+<p>✈️ 大B舅父遊世界 Uncle Bruce GoTravel © 2026 — 香港人旅遊計劃專家</p>
 <p style="margin-top:8px;font-size:12px">付款方式：PayMe · Alipay HK | 所有旅遊計劃由 AI 生成，僅供參考</p>
 </footer>
 
@@ -423,6 +457,21 @@ tokyo: {
     {airline:'國泰航空',code:'CX520',from:'HKG',fromName:'香港',to:'NRT',toName:'東京成田',depart:'08:25',arrive:'13:30',duration:'4h05m',price:'$2,800',type:'直航',cabin:'經濟艙'},
     {airline:'香港航空',code:'HX608',from:'HKG',fromName:'香港',to:'NRT',toName:'東京成田',depart:'15:40',arrive:'20:45',duration:'4h05m',price:'$2,200',type:'直航',cabin:'經濟艙'},
     {airline:'ANA 全日空',code:'NH812',from:'HKG',fromName:'香港',to:'HND',toName:'東京羽田',depart:'10:15',arrive:'15:00',duration:'3h45m',price:'$3,500',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Hotel Gracery Shinjuku',stars:4,icon:'🏨',location:'新宿歌舞伎町',detail:'哥吉拉頭像地標，房間企理，新宿中心位置',price:'HK$800/晚',bookUrl:'https://www.booking.com/hotel/jp/gracery-shinjuku.html'},
+    {name:'Park Hotel Tokyo',stars:4,icon:'🎨',location:'汐留/築地',detail:'藝術主題酒店，高層海景房，近築地市場',price:'HK$1,200/晚',bookUrl:'https://www.booking.com/hotel/jp/park-hotel-tokyo.html'},
+    {name:'The Peninsula Tokyo',stars:5,icon:'👑',location:'銀座/日比谷',detail:'東京頂級酒店，皇居景觀，服務一流',price:'HK$4,500/晚',bookUrl:'https://www.booking.com/hotel/jp/the-peninsula-tokyo.html'},
+  ],
+  transportLinks:[
+    {icon:'✈️',title:'預訂機票',links:[
+      {name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/tyoa/'},
+      {name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-tokyo/'},
+    ]},
+    {icon:'🚄',title:'預訂日本火車 Pass',links:[
+      {name:'JR Pass 官方',url:'https://japanrailpass.net/'},
+      {name:'Klook JR Pass',url:'https://www.klook.com/en-HK/activity/1420-jr-pass/'},
+    ]},
   ],
   days:[
   {title:'淺草・秋葉原・晴空塔',spots:[
@@ -481,6 +530,19 @@ bangkok: {
     {airline:'泰國航空',code:'TG601',from:'HKG',fromName:'香港',to:'BKK',toName:'曼谷素萬那普',depart:'14:25',arrive:'16:15',duration:'2h50m',price:'$2,100',type:'直航',cabin:'經濟艙'},
     {airline:'HK Express',code:'UO702',from:'HKG',fromName:'香港',to:'DMK',toName:'曼谷廊曼',depart:'11:10',arrive:'13:00',duration:'2h50m',price:'$900',type:'直航',cabin:'經濟艙'},
   ],
+  hotels:[
+    {name:'Ibis Bangkok Siam',stars:3,icon:'🏨',location:'暹羅商圈',detail:'近BTS Siam站，平價乾淨，周邊購物方便',price:'HK$350/晚',bookUrl:'https://www.booking.com/hotel/th/ibis-bangkok-siam.html'},
+    {name:'Centara Grand at CentralWorld',stars:5,icon:'👑',location:'CentralWorld',detail:'五星級商場直通，無邊際泳池，自助早餐超正',price:'HK$900/晚',bookUrl:'https://www.booking.com/hotel/th/centara-grand-at-centralworld.html'},
+  ],
+  transportLinks:[
+    {icon:'✈️',title:'預訂機票',links:[
+      {name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/bkkt/'},
+      {name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-bangkok/'},
+    ]},
+    {icon:'🚢',title:'預訂渡輪/船票',links:[
+      {name:'12Go Asia',url:'https://12go.asia/en/hong-kong/bangkok/ferry'},
+    ]},
+  ],
   days:[
   {title:'大皇宮・考山路・河畔',spots:[
     {time:'08:30',endTime:'11:30',icon:'🛕',title:'大皇宮 + 玉佛寺',desc:'泰國最神聖嘅皇宮建築群，玉佛寺金碧輝煌',ticket:'฿500',tip:'必須穿長褲同有袖衫，門口有圍巾借',
@@ -521,6 +583,23 @@ paris: {
     {airline:'法國航空',code:'AF185',from:'HKG',fromName:'香港',to:'CDG',toName:'巴黎戴高樂',depart:'23:25',arrive:'05:45+1',duration:'13h20m',price:'$6,500',type:'直航',cabin:'經濟艙'},
     {airline:'國泰航空',code:'CX261',from:'HKG',fromName:'香港',to:'CDG',toName:'巴黎戴高樂',depart:'00:05',arrive:'06:30',duration:'13h25m',price:'$5,800',type:'直航',cabin:'經濟艙'},
     {airline:'阿聯酋航空',code:'EK385',from:'HKG',fromName:'香港',to:'CDG',toName:'巴黎戴高樂',depart:'21:15',arrive:'11:05+1',duration:'17h50m',price:'$4,200',type:'經杜拜轉機',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Hôtel du Petit Moulin',stars:3,icon:'🏨',location:'瑪黑區',detail:'精品設計酒店，Christian Lacroix 設計，近畢加索博物館',price:'HK$1,000/晚',bookUrl:'https://www.booking.com/hotel/fr/du-petit-moulin.html'},
+    {name:'Le Meurice',stars:5,icon:'👑',location:'杜樂麗花園旁',detail:'巴黎宮殿級酒店，面對杜樂麗花園，服務頂級',price:'HK$6,000/晚',bookUrl:'https://www.booking.com/hotel/fr/le-meurice.html'},
+  ],
+  transportLinks:[
+    {icon:'✈️',title:'預訂機票',links:[
+      {name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/pari/'},
+      {name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-paris/'},
+    ]},
+    {icon:'🚄',title:'預訂歐洲火車票',links:[
+      {name:'Trainline',url:'https://www.trainline.eu/'},
+      {name:'Eurail Pass',url:'https://www.eurail.com/'},
+    ]},
+    {icon:'🚢',title:'預訂渡輪/郵輪',links:[
+      {name:'Brittany Ferries',url:'https://www.brittanyferries.com/'},
+    ]},
   ],
   days:[
   {title:'鐵塔・羅浮宮・塞納河',spots:[
@@ -568,6 +647,16 @@ function getDefaultPlan(dest) {
       {airline:'國泰航空',code:'CX001',from:'HKG',fromName:'香港',to:'XXX',toName:name,depart:'09:00',arrive:'12:00',duration:'3h',price:'$3,000',type:'直航',cabin:'經濟艙'},
       {airline:'香港航空',code:'HX001',from:'HKG',fromName:'香港',to:'XXX',toName:name,depart:'15:00',arrive:'18:00',duration:'3h',price:'$2,200',type:'直航',cabin:'經濟艙'},
     ],
+    hotels:[
+      {name:`${name}市中心酒店`,stars:3,icon:'🏨',location:`${name}市中心`,detail:'交通方便，乾淨企理，性價比高',price:'HK$500/晚',bookUrl:`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(name)}`},
+      {name:`${name}五星級度假村`,stars:5,icon:'👑',location:`${name}高級區域`,detail:'頂級設施，服務一流，景觀開揚',price:'HK$2,000/晚',bookUrl:`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(name)}`},
+    ],
+    transportLinks:[
+      {icon:'✈️',title:'預訂機票',links:[
+        {name:'Skyscanner',url:`https://www.skyscanner.com.hk/`},
+        {name:'Trip.com',url:`https://www.trip.com/`},
+      ]},
+    ],
     days:[
     {title:`${name}精華遊`,spots:[
       {time:'09:00',endTime:'11:30',icon:emoji,title:`${name}著名景點 A`,desc:`探索${name}最受歡迎嘅景點，感受當地文化`,ticket:'$50',tip:'建議早到避開人潮',
@@ -590,7 +679,7 @@ function getDefaultPlan(dest) {
 }
 
 // ============ PLAN CONFIG ============
-const PLAN_PRICES={basic:10,standard:20,premium:50};
+const PLAN_PRICES={basic:5,standard:10,premium:20};
 const PLAN_NAMES={basic:'基本計劃',standard:'標準計劃',premium:'尊貴計劃'};
 let selectedPlan=null, selectedDest=null, timerInterval=null;
 
@@ -634,6 +723,19 @@ document.getElementById('payStep2').classList.add('show');
 document.getElementById('payTitle').textContent=m==='payme'?'PayMe 付款':'Alipay 付款';
 document.getElementById('qrInstructions').innerHTML=m==='payme'?`1. 打開 HSBC PayMe App<br>2. 掃描上方 QR Code<br>3. 確認金額 HK$${PLAN_PRICES[selectedPlan]} 並付款`:`1. 打開 Alipay HK App<br>2. 掃描上方 QR Code<br>3. 確認金額 HK$${PLAN_PRICES[selectedPlan]} 並付款`;
 drawFakeQR();startTimer();
+}
+function directPay(method){
+const amt=PLAN_PRICES[selectedPlan];
+const destName=selectedDest?selectedDest.name:'旅遊';
+if(method==='payme'){
+  // Try PayMe deep link
+  const url=`payme://pay?amount=${amt}&currency=HKD&note=${encodeURIComponent(destName+'旅遊計劃')}`;
+  window.open(url,'_blank');
+}else{
+  // Try Alipay HK deep link
+  const url=`alipays://platformapi/startapp?appId=20000067&url=${encodeURIComponent('https://render.alipay.com/p/s/i/?scheme=alipays://platformapi/startapp?appId=20000124')}`;
+  window.open(url,'_blank');
+}
 }
 function drawFakeQR(){const c=document.getElementById('qrCanvas'),x=c.getContext('2d');c.width=180;c.height=180;x.fillStyle='#fff';x.fillRect(0,0,180,180);x.fillStyle='#000';for(let i=0;i<30;i++)for(let j=0;j<30;j++)if(Math.random()>.45||(i<3&&j<3)||(i<3&&j>26)||(i>26&&j<3))x.fillRect(i*6,j*6,6,6);[[0,0],[144,0],[0,144]].forEach(([a,b])=>{x.fillStyle='#000';x.fillRect(a,b,24,24);x.fillStyle='#fff';x.fillRect(a+6,b+6,12,12);x.fillStyle='#000';x.fillRect(a+9,b+9,6,6);});}
 function startTimer(){let s=600;if(timerInterval)clearInterval(timerInterval);timerInterval=setInterval(()=>{s--;document.getElementById('qrTimer').textContent=`剩餘時間：${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;if(s<=0){clearInterval(timerInterval);closeModal();}},1000);}
@@ -702,6 +804,30 @@ html+=`<div class="flight-card">
 <div class="flight-detail"><div class="label">客艙</div><div class="value">${f.cabin}</div></div>
 <div class="flight-detail"><div class="label">參考價</div><div class="value" style="color:#f5a623">${f.price}</div></div>
 </div></div>`;
+});
+}
+
+// === TRANSPORT BOOKING LINKS (Premium only) ===
+if(plan==='premium'&&planData.transportLinks){
+html+=`<h3 style="font-size:22px;font-weight:800;margin:32px 0 16px">🎫 預訂交通</h3>`;
+planData.transportLinks.forEach(tl=>{
+  html+=`<div style="margin-bottom:16px">`;
+  html+=`<div style="font-size:16px;font-weight:700;margin-bottom:8px">${tl.icon} ${tl.title}</div>`;
+  html+=`<div class="booking-links">`;
+  tl.links.forEach(lnk=>{
+    const linkClass=tl.icon==='✈️'?'flight':tl.icon==='🚄'?'train':'boat';
+    html+=`<a href="${lnk.url}" target="_blank" class="booking-link ${linkClass}">🔗 ${lnk.name}</a>`;
+  });
+  html+=`</div></div>`;
+});
+}
+
+// === HOTEL RECOMMENDATIONS (Premium only) ===
+if(plan==='premium'&&planData.hotels){
+html+=`<h3 style="font-size:22px;font-weight:800;margin:32px 0 16px">🏨 酒店推介</h3>`;
+planData.hotels.forEach(h=>{
+  const stars='⭐'.repeat(h.stars);
+  html+=`<div class="hotel-card"><div class="hotel-icon">${h.icon}</div><div class="hotel-info"><div class="hotel-name">${h.name}</div><div class="hotel-stars">${stars} ${h.stars}星級</div><div class="hotel-detail">${h.location}｜${h.detail}</div></div><div style="text-align:right"><div class="hotel-price">${h.price}</div><a href="${h.bookUrl}" target="_blank" class="booking-link hotel" style="margin-top:6px;font-size:11px;padding:6px 10px">🔗 預訂</a></div></div>`;
 });
 }
 
