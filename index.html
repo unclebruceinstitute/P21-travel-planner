@@ -89,6 +89,23 @@ section{max-width:1200px;margin:0 auto;padding:60px 24px}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;padding:24px}
 .modal-overlay.show{display:flex}
 .modal{background:var(--card);border-radius:var(--radius);padding:36px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.preview-modal{max-width:520px}
+.preview-header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.preview-emoji{font-size:48px}
+.preview-title{font-size:24px;font-weight:800}
+.preview-country{color:var(--text-light);font-size:14px}
+.preview-tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.preview-tag{background:var(--bg);padding:4px 12px;border-radius:100px;font-size:12px;font-weight:500}
+.preview-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.preview-info-item{background:var(--bg);border-radius:12px;padding:12px;text-align:center}
+.preview-info-item .val{font-size:16px;font-weight:700;color:var(--primary)}
+.preview-info-item .lbl{font-size:11px;color:var(--text-light)}
+.preview-desc{color:var(--text-light);font-size:14px;margin:12px 0;line-height:1.6}
+.preview-btns{display:flex;gap:10px;margin-top:20px}
+.preview-btns button{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s}
+.preview-btn-select{background:var(--primary);color:#fff;border:none}
+.preview-btn-select:hover{background:var(--primary-dark)}
+.preview-btn-close{background:transparent;color:var(--text-light);border:2px solid var(--border)}
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-light);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s}
 .modal-close:hover{background:var(--bg)}
 .modal h2{font-size:22px;font-weight:800;margin-bottom:8px}
@@ -258,7 +275,7 @@ footer a{color:rgba(255,255,255,.9)}
 <p>輸入你嘅旅遊條件，AI 為你生成專屬行程<br>景點 · 路線 · 餐廳 · 機票 · 交通 · 全包</p>
 <a href="#booking" class="hero-cta">🚀 立即規劃旅程</a>
 <div class="hero-stats">
-<div class="hero-stat"><span class="num">50+</span><span class="label">熱門目的地</span></div>
+<div class="hero-stat"><span class="num">27+</span><span class="label">熱門目的地</span></div>
 <div class="hero-stat"><span class="num">3</span><span class="label">方案選擇</span></div>
 <div class="hero-stat"><span class="num">HK$5</span><span class="label">起</span></div>
 </div>
@@ -442,6 +459,13 @@ footer a{color:rgba(255,255,255,.9)}
 
 <section class="result-area" id="resultArea"></section>
 
+<div class="modal-overlay" id="previewModal">
+<div class="modal preview-modal">
+<button class="modal-close" onclick="closePreview()">&times;</button>
+<div id="previewContent"></div>
+</div>
+</div>
+
 <footer>
 <div class="footer-grid">
 <div class="footer-col">
@@ -497,6 +521,10 @@ const DESTINATIONS=[
 {id:'newyork',name:'紐約',country:'美國',region:'americas',emoji:'🗽',color:'#34ace0',tags:['自由女神','百老匯','購物'],desc:'時代廣場、中央公園、自由女神',best:'4月-6月',days:'5-7日'},
 {id:'la',name:'洛杉磯',country:'美國',region:'americas',emoji:'🎬',color:'#706fd3',tags:['荷里活','環球影城','海灘'],desc:'荷里活、Santa Monica、環球影城',best:'3月-5月',days:'5-7日'},
 {id:'vancouver',name:'溫哥華',country:'加拿大',region:'americas',emoji:'🍁',color:'#e15f41',tags:['自然','滑雪','多元文化'],desc:'Stanley Park、Whistler、Granville',best:'6月-9月',days:'5-7日'},
+{id:'macau',name:'澳門',country:'中國',region:'east-asia',emoji:'🎰',color:'#d4a017',tags:['賭場','美食','世遺','購物'],desc:'大三巴、威尼斯人、官也街、豬扒包',best:'10月-12月',days:'1-2日'},
+{id:'shenzhen',name:'深圳',country:'中國',region:'east-asia',emoji:'🏙️',color:'#2ed573',tags:['購物','主題公園','美食','科技'],desc:'華僑城、世界之窗、東門老街、海岸城',best:'10月-12月',days:'1-3日'},
+{id:'okinawa',name:'沖繩',country:'日本',region:'east-asia',emoji:'🏝️',color:'#70a1ff',tags:['海灘','潛水','美軍基地','泡盛'],desc:'首里城、美麗海水族館、國際通、殘波岬',best:'4月-6月',days:'4-6日'},
+{id:'sapporo',name:'札幌',country:'日本',region:'east-asia',emoji:'❄️',color:'#74b9ff',tags:['雪景','海鮮','啤酒','溫泉'],desc:'白色戀人公園、二條市場、小樽運河、藻岩山',best:'12月-2月',days:'4-6日'},
 ];
 
 // ============ RICH PLAN DATA (per destination) ============
@@ -685,6 +713,236 @@ paris: {
     {icon:'🕯️',name:'Diptyque 香薰蠟燭',detail:'巴黎製造，Baies 味最出名',price:'€65',where:'聖日耳曼專門店'},
   ]},
   ]},
+seoul: {
+  flights:[
+    {airline:'國泰航空',code:'CX410',from:'HKG',fromName:'香港',to:'ICN',toName:'首爾仁川',depart:'09:25',arrive:'13:55',duration:'3h30m',price:'$2,400',type:'直航',cabin:'經濟艙'},
+    {airline:'大韓航空',code:'KE614',from:'HKG',fromName:'香港',to:'ICN',toName:'首爾仁川',depart:'16:30',arrive:'21:00',duration:'3h30m',price:'$2,800',type:'直航',cabin:'經濟艙'},
+    {airline:'HK Express',code:'UO626',from:'HKG',fromName:'香港',to:'ICN',toName:'首爾仁川',depart:'07:50',arrive:'12:20',duration:'3h30m',price:'$1,500',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Lotte Hotel Seoul',stars:5,icon:'👑',location:'明洞/南大門',detail:'首爾地標酒店，免稅店直通，明洞中心',price:'HK$1,200/晚',bookUrl:'https://www.booking.com/hotel/kr/lotte-seoul.html'},
+    {name:'Glad Hotel Mapo',stars:4,icon:'🏨',location:'麻浦/弘大',detail:'設計感酒店，近弘大入口站，夜生活方便',price:'HK$600/晚',bookUrl:'https://www.booking.com/hotel/kr/glad-mapo.html'},
+  ],
+  transportLinks:[{icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/seoul/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-seoul/'}]}],
+  days:[
+  {title:'景福宮・明洞・N塔',spots:[
+    {time:'09:00',endTime:'11:30',icon:'🏯',title:'景福宮 + 韓服體驗',desc:'朝鮮皇宮，穿韓服入場免費！光化門守衛換班儀式必睇',ticket:'₩3,000（穿韓服免費）',tip:'附近有好多韓服租借店，$100港幣左右',
+     transport:{icon:'🚇',title:'地鐵3號線',detail:'酒店 → 景福宮站',duration:'15分鐘',price:'₩1,250'},
+     restaurant:{name:'土俗村參雞湯',icon:'🍗',detail:'首爾最有名參雞湯，景福宮旁，排隊名店',price:'₩18,000',time:'午餐'}},
+    {time:'13:00',endTime:'16:00',icon:'🛍️',title:'明洞購物街',desc:'韓國最大購物街！Olive Young、Innisfree、3CE，化妝品天堂',ticket:'免費',tip:'Olive Young 必掃面膜',
+     transport:{icon:'🚶',title:'步行',detail:'景福宮 → 明洞（約20分鐘）',duration:'20分鐘',price:'免費'},
+     restaurant:{name:'明洞餃子',icon:'🥟',detail:'米其林推薦餃子店，皮薄餡多',price:'₩8,000',time:'下午茶'}},
+    {time:'17:00',endTime:'19:30',icon:'🗼',title:'N Seoul Tower（N塔）',desc:'首爾地標，南山塔頂睇日落夜景，愛情鎖牆打卡',ticket:'₩16,000（展望台）',tip:'搭纜車上山，日落前到最靚',
+     transport:{icon:'🚌',title:'南山纜車',detail:'明洞 → N塔',duration:'10分鐘',price:'₩11,000來回'},
+     restaurant:null},
+    {time:'20:00',endTime:'22:00',icon:'🍖',title:'姜虎東烤肉 + 弘大夜街',desc:'韓式烤肉晚餐，之後去弘大感受首爾夜生活',ticket:'免費',tip:'弘大周末有街頭表演',
+     transport:{icon:'🚇',title:'地鐵2號線',detail:'N塔 → 弘大入口站',duration:'20分鐘',price:'₩1,250'},
+     restaurant:{name:'姜虎東白丁',icon:'🥩',detail:'韓星烤肉店，五花肉+牛肋骨必食',price:'₩25,000',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'💄',name:'Olive Young 必買',detail:'面膜、唇膏、護膚品，韓國美妝掃貨天堂',price:'₩5,000起',where:'明洞 Olive Young'},
+    {icon:'🍪',name:'蜂蜜牛油杏仁',detail:'韓國人氣零食，機場都有賣',price:'₩5,900',where:'明洞/機場'},
+  ]},
+  {title:'北村・江南・汗蒸幕',spots:[
+    {time:'09:00',endTime:'12:00',icon:'🏘️',title:'北村韓屋村 + 三清洞',desc:'朝鮮時代韓屋群，石板路超有feel，三清洞文青café街',ticket:'免費',tip:'穿舒服鞋，好多上坡路',
+     transport:{icon:'🚇',title:'地鐵3號線',detail:'酒店 → 安國站',duration:'15分鐘',price:'₩1,250'},
+     restaurant:{name:'三清洞摩西',icon:'🍲',detail:'韓式年糕鍋自助，$80港幣任食',price:'₩12,000',time:'午餐'}},
+    {time:'14:00',endTime:'17:00',icon:'🏙️',title:'江南 COEX Mall + 星空圖書館',desc:'首爾最大地下商場，星空圖書館超靚打卡位',ticket:'免費',tip:'COEX 水族館都好正',
+     transport:{icon:'🚇',title:'地鐵2號線',detail:'安國 → 三成站',duration:'25分鐘',price:'₩1,250'},
+     restaurant:null},
+    {time:'18:30',endTime:'22:00',icon:'♨️',title:'Dragon Hill Spa 汗蒸幕',desc:'韓式汗蒸幕體驗！烤雞蛋+米酒，放鬆必去',price:'₩15,000',tip:'帶定面膜去敷',
+     transport:{icon:'🚇',title:'地鐵1號線',detail:'三成 → 龍山站',duration:'20分鐘',price:'₩1,250'},
+     restaurant:{name:'汗蒸幕內小吃',icon:'🥚',detail:'烤雞蛋+甜米酒，汗蒸幕必食組合',price:'₩5,000',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🧴',name:'韓國面膜套裝',detail:'Mediheal、Dr.Jart+，10片裝超抵',price:'₩10,000',where:'Olive Young/Lotte免稅'},
+    {icon:'🌶️',name:'韓式辣醬/泡菜',detail:'真空包裝可帶上機',price:'₩5,000起',where:'超市/機場'},
+  ]},
+  ]},
+taipei: {
+  flights:[
+    {airline:'國泰航空',code:'CX450',from:'HKG',fromName:'香港',to:'TPE',toName:'台北桃園',depart:'08:30',arrive:'10:20',duration:'1h50m',price:'$1,600',type:'直航',cabin:'經濟艙'},
+    {airline:'HK Express',code:'UO112',from:'HKG',fromName:'香港',to:'TPE',toName:'台北桃園',depart:'18:30',arrive:'20:20',duration:'1h50m',price:'$900',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Caesar Park Taipei',stars:4,icon:'🏨',location:'台北車站',detail:'台北車站正對面，交通超方便',price:'HK$700/晚',bookUrl:'https://www.booking.com/hotel/tw/caesar-park-taipei.html'},
+    {name:'W Taipei',stars:5,icon:'👑',location:'信義區',detail:'時尚設計酒店，近台北101',price:'HK$1,800/晚',bookUrl:'https://www.booking.com/hotel/tw/w-taipei.html'},
+  ],
+  transportLinks:[{icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/taipei/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-taipei/'}]}],
+  days:[
+  {title:'台北101・信義區・士林夜市',spots:[
+    {time:'09:00',endTime:'11:30',icon:'🏙️',title:'台北101觀景台',desc:'508米地標，89樓觀景台360度台北全景',ticket:'NT$600',tip:'網上買票平NT$100',
+     transport:{icon:'🚇',title:'捷運紅線',detail:'酒店 → 台北101/世貿站',duration:'15分鐘',price:'NT$25'},
+     restaurant:{name:'鼎泰豐（信義店）',icon:'🥟',detail:'世界知名小籠包，18摺皮薄汁多',price:'NT$500',time:'午餐'}},
+    {time:'13:00',endTime:'16:00',icon:'🌳',title:'象山步道',desc:'台北101最佳拍攝位置！30分鐘登頂',ticket:'免費',tip:'帶水，穿運動鞋',
+     transport:{icon:'🚇',title:'捷運紅線',detail:'台北101 → 象山站',duration:'5分鐘',price:'NT$20'},
+     restaurant:null},
+    {time:'17:30',endTime:'21:00',icon:'🏮',title:'士林夜市',desc:'台北最大夜市！蚵仔煎、大腸包小腸、珍珠奶茶',ticket:'免費',tip:'帶現金，大部分攤位唔收卡',
+     transport:{icon:'🚇',title:'捷運紅線',detail:'象山 → 劍潭站',duration:'20分鐘',price:'NT$30'},
+     restaurant:{name:'士林夜市小食',icon:'🦑',detail:'蚵仔煎+大腸包小腸+珍珠奶茶',price:'NT$200',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🍍',name:'佳德鳳梨酥',detail:'台北No.1鳳梨酥，門口永遠排隊',price:'NT$420/盒',where:'佳德糕餅'},
+    {icon:'🍵',name:'台灣高山茶',detail:'阿里山/梨山茶，送禮大方',price:'NT$500起',where:'茶葉專門店'},
+  ]},
+  {title:'九份・十分・北投溫泉',spots:[
+    {time:'08:00',endTime:'13:00',icon:'🏮',title:'九份老街',desc:'《千與千尋》取景靈感！山城老街、芋圓、茶樓睇海景',ticket:'免費',tip:'平日去，假日人山人海',
+     transport:{icon:'🚌',title:'巴士1062',detail:'台北車站 → 九份（約90分鐘）',duration:'90分鐘',price:'NT$90'},
+     restaurant:{name:'阿柑姨芋圓',icon:'🍡',detail:'九份必食，手工芋圓配山景',price:'NT$60',time:'午餐'}},
+    {time:'14:00',endTime:'16:30',icon:'🎆',title:'十分放天燈',desc:'《那些年》放天燈場景！寫願望放天燈超浪漫',ticket:'天燈 NT$150-200',tip:'四色天燈代表唔同意義',
+     transport:{icon:'🚂',title:'台鐵支線',detail:'瑞芳 → 十分（約30分鐘）',duration:'30分鐘',price:'NT$19'},
+     restaurant:null},
+    {time:'18:00',endTime:'21:00',icon:'♨️',title:'北投溫泉',desc:'日式溫泉區，地熱谷超靚，泡湯放鬆',ticket:'溫泉 NT$400起',tip:'帶泳衣，公共溫泉需穿',
+     transport:{icon:'🚇',title:'捷運',detail:'十分 → 台北 → 新北投',duration:'90分鐘',price:'NT$80'},
+     restaurant:{name:'少帥禪園',icon:'🍵',detail:'張學良故居改建溫泉餐廳，邊泡腳邊食下午茶',price:'NT$600',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🏮',name:'十分天燈紀念品',detail:'迷你天燈鑰匙扣、明信片',price:'NT$100起',where:'十分老街'},
+  ]},
+  ]},
+singapore: {
+  flights:[
+    {airline:'國泰航空',code:'CX715',from:'HKG',fromName:'香港',to:'SIN',toName:'新加坡樟宜',depart:'09:00',arrive:'13:00',duration:'4h',price:'$2,200',type:'直航',cabin:'經濟艙'},
+    {airline:'HK Express',code:'UO772',from:'HKG',fromName:'香港',to:'SIN',toName:'新加坡樟宜',depart:'11:45',arrive:'15:45',duration:'4h',price:'$1,200',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Marina Bay Sands',stars:5,icon:'👑',location:'濱海灣',detail:'新加坡地標！無邊際泳池',price:'HK$3,500/晚',bookUrl:'https://www.booking.com/hotel/sg/marina-bay-sands.html'},
+    {name:'Hotel Boss',stars:3,icon:'🏨',location:'Lavender',detail:'平價乾淨，近地鐵站',price:'HK$500/晚',bookUrl:'https://www.booking.com/hotel/sg/hotel-boss.html'},
+  ],
+  transportLinks:[{icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/singapore/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-singapore/'}]}],
+  days:[
+  {title:'濱海灣・金沙・花園',spots:[
+    {time:'09:00',endTime:'12:00',icon:'🌳',title:'Gardens by the Bay',desc:'超級樹、Cloud Forest、Flower Dome，未來感花園',ticket:'SGD$32',tip:'超級樹燈光秀 19:45/20:45 免費',
+     transport:{icon:'🚇',title:'MRT',detail:'酒店 → Bayfront 站',duration:'15分鐘',price:'SGD$1.50'},
+     restaurant:{name:'松發肉骨茶',icon:'🍲',detail:'新加坡必食！白胡椒肉骨茶',price:'SGD$8',time:'午餐'}},
+    {time:'13:00',endTime:'16:00',icon:'🎰',title:'Marina Bay Sands 空中花園',desc:'金沙酒店57樓觀景台',ticket:'SGD$26',tip:'日落前去景色最佳',
+     transport:{icon:'🚶',title:'步行',detail:'花園 → 金沙（5分鐘）',duration:'5分鐘',price:'免費'},
+     restaurant:null},
+    {time:'17:00',endTime:'21:00',icon:'🏮',title:'牛車水 + 天天海南雞飯',desc:'唐人街、佛牙寺、Maxwell熟食中心',ticket:'免費',tip:'天天海南雞飯排隊但值得',
+     transport:{icon:'🚇',title:'MRT',detail:'Bayfront → Chinatown',duration:'10分鐘',price:'SGD$1.50'},
+     restaurant:{name:'天天海南雞飯',icon:'🐔',detail:'米其林推薦！新加坡最好食嘅雞飯',price:'SGD$5',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🍪',name:'TWG 茶葉',detail:'新加坡高級茶品牌，送禮一流',price:'SGD$30起',where:'金沙/ION Orchard'},
+    {icon:'🐯',name:'虎標萬金油',detail:'新加坡百年品牌',price:'SGD$10起',where:'屈臣氏/機場'},
+  ]},
+  {title:'聖淘沙・環球影城',spots:[
+    {time:'09:00',endTime:'18:00',icon:'🎢',title:'Universal Studios Singapore',desc:'東南亞唯一環球影城！變形金剛、木乃伊',ticket:'SGD$82',tip:'買Express Pass慳排隊時間',
+     transport:{icon:'🚇',title:'MRT + Sentosa Express',detail:'酒店 → HarbourFront → 聖淘沙',duration:'30分鐘',price:'SGD$4'},
+     restaurant:{name:'Malaysian Food Street',icon:'🍜',detail:'聖淘沙美食街，集合東南亞美食',price:'SGD$12',time:'午餐'}},
+    {time:'19:00',endTime:'21:30',icon:'🌊',title:'Wings of Time 水幕表演',desc:'海邊燈光水幕秀，超震撼視覺效果',ticket:'SGD$18',tip:'提早30分鐘到攞好位',
+     transport:{icon:'🚶',title:'步行',detail:'環球影城 → 海灘',duration:'10分鐘',price:'免費'},
+     restaurant:{name:'VivoCity 怡豐城',icon:'🍽️',detail:'回程去怡豐城食晚餐',price:'SGD$15',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🧇',name:'Irvins 鹹蛋魚皮',detail:'新加坡爆紅零食！鹹蛋黃味超正',price:'SGD$16',where:'機場/Irvins 門店'},
+  ]},
+  ]},
+osaka: {
+  flights:[
+    {airline:'國泰航空',code:'CX500',from:'HKG',fromName:'香港',to:'KIX',toName:'大阪關西',depart:'09:45',arrive:'14:30',duration:'3h45m',price:'$2,600',type:'直航',cabin:'經濟艙'},
+    {airline:'Peach Aviation',code:'MM68',from:'HKG',fromName:'香港',to:'KIX',toName:'大阪關西',depart:'16:10',arrive:'20:55',duration:'3h45m',price:'$1,400',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Cross Hotel Osaka',stars:4,icon:'🏨',location:'道頓堀/心齋橋',detail:'設計酒店，道頓堀步行5分鐘',price:'HK$700/晚',bookUrl:'https://www.booking.com/hotel/jp/cross-osaka.html'},
+    {name:'The Ritz-Carlton Osaka',stars:5,icon:'👑',location:'梅田',detail:'大阪頂級酒店',price:'HK$3,800/晚',bookUrl:'https://www.booking.com/hotel/jp/ritz-carlton-osaka.html'},
+  ],
+  transportLinks:[{icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/osaa/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-osaka/'}]},{icon:'🚄',title:'預訂JR Pass',links:[{name:'JR Pass 官方',url:'https://japanrailpass.net/'},{name:'Klook JR Pass',url:'https://www.klook.com/en-HK/activity/1420-jr-pass/'}]}],
+  days:[
+  {title:'道頓堀・心齋橋・黑門市場',spots:[
+    {time:'09:00',endTime:'11:30',icon:'🦀',title:'黑門市場',desc:'大阪嘅廚房！海鮮刺身、和牛串、草莓大福',ticket:'免費',tip:'帶現金，好多攤位唔收卡',
+     transport:{icon:'🚇',title:'地鐵',detail:'酒店 → 日本橋站',duration:'10分鐘',price:'¥230'},
+     restaurant:{name:'黑門市場海鮮',icon:'🦐',detail:'即開生蠔¥500、和牛串¥500',price:'¥2,000',time:'早午餐'}},
+    {time:'12:00',endTime:'15:00',icon:'🏯',title:'大阪城天守閣',desc:'豐臣秀吉建嘅城堡，頂層展望台睇大阪全景',ticket:'¥600',tip:'櫻花季大阪城公園超靚',
+     transport:{icon:'🚇',title:'地鐵',detail:'日本橋 → 大阪城公園',duration:'15分鐘',price:'¥280'},
+     restaurant:null},
+    {time:'16:00',endTime:'21:00',icon:'🏮',title:'道頓堀 + 心齋橋筋',desc:'大阪最熱鬧街！格力高跑步人打卡',ticket:'免費',tip:'道頓堀水上巴士都好正',
+     transport:{icon:'🚶',title:'步行',detail:'大阪城 → 道頓堀',duration:'25分鐘',price:'免費'},
+     restaurant:{name:'一蘭拉麵 道頓堀店',icon:'🍜',detail:'24小時營業，個人隔間',price:'¥1,500',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🍫',name:'PABLO 芝士撻',detail:'大阪名物！流心芝士撻',price:'¥250/個',where:'道頓堀/心齋橋'},
+  ]},
+  {title:'環球影城全日',spots:[
+    {time:'08:30',endTime:'20:00',icon:'🎢',title:'Universal Studios Japan',desc:'哈利波特魔法世界、任天堂世界、小黃人樂園',ticket:'¥8,600',tip:'買Express Pass慳排隊',
+     transport:{icon:'🚇',title:'JR夢咲線',detail:'大阪環球影城站',duration:'15分鐘',price:'¥190'},
+     restaurant:{name:'三根掃帚酒吧',icon:'🍺',detail:'哈利波特園區內，Butter Beer 必飲',price:'¥1,200',time:'午餐'}},
+    {time:'20:30',endTime:'22:00',icon:'🌃',title:'梅田空中庭園展望台',desc:'173米空中展望台，360度大阪夜景',ticket:'¥1,500',tip:'日落後去夜景最靚',
+     transport:{icon:'🚇',title:'JR',detail:'環球影城 → 梅田',duration:'20分鐘',price:'¥190'},
+     restaurant:{name:'蟹道道 梅田店',icon:'🦀',detail:'大阪必食！帝王蟹套餐',price:'¥5,000',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🧹',name:'哈利波特魔杖',detail:'環球影城限定，互動魔杖',price:'¥4,900',where:'環球影城'},
+  ]},
+  ]},
+london: {
+  flights:[
+    {airline:'國泰航空',code:'CX251',from:'HKG',fromName:'香港',to:'LHR',toName:'倫敦希斯路',depart:'23:55',arrive:'05:40+1',duration:'12h45m',price:'$6,000',type:'直航',cabin:'經濟艙'},
+    {airline:'英國航空',code:'BA32',from:'HKG',fromName:'香港',to:'LHR',toName:'倫敦希斯路',depart:'23:20',arrive:'05:05+1',duration:'12h45m',price:'$5,500',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'The Z Hotel Shoreditch',stars:3,icon:'🏨',location:'Shoreditch',detail:'設計型酒店，文青區',price:'HK$800/晚',bookUrl:'https://www.booking.com/hotel/gb/the-z-shoreditch.html'},
+    {name:'The Savoy',stars:5,icon:'👑',location:'Strand',detail:'倫敦最iconic酒店，泰晤士河畔',price:'HK$5,000/晚',bookUrl:'https://www.booking.com/hotel/gb/the-savoy.html'},
+  ],
+  transportLinks:[{icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/london/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-london/'}]},{icon:'🚄',title:'預訂歐洲火車票',links:[{name:'Trainline',url:'https://www.trainline.eu/'},{name:'Eurostar',url:'https://www.eurostar.com/'}]}],
+  days:[
+  {title:'西敏寺・大笨鐘・白金漢宮',spots:[
+    {time:'09:00',endTime:'11:30',icon:'🎡',title:'大笨鐘 + 西敏寺',desc:'倫敦地標！西敏寺係英國皇室加冕教堂',ticket:'西敏寺 £27',tip:'大笨鐘整修中，外面影相就得',
+     transport:{icon:'🚇',title:'Tube',detail:'酒店 → Westminster 站',duration:'15分鐘',price:'£2.80'},
+     restaurant:{name:'The Wolseley',icon:'☕',detail:'倫敦最靚café，英式早餐必食',price:'£20',time:'早午餐'}},
+    {time:'12:00',endTime:'14:00',icon:'👑',title:'白金漢宮 + 換班儀式',desc:'英國皇宮！換班儀式超有氣勢',ticket:'白金漢宮 £30（夏季）',tip:'換班儀式 11:00 開始，提早1小時攞位',
+     transport:{icon:'🚶',title:'步行',detail:'西敏寺 → 白金漢宮（10分鐘）',duration:'10分鐘',price:'免費'},
+     restaurant:null},
+    {time:'15:00',endTime:'18:00',icon:'🏛️',title:'大英博物館',desc:'全球最大博物館！木乃伊、羅塞塔石碑',ticket:'免費',tip:'至少預3小時',
+     transport:{icon:'🚇',title:'Tube',detail:'白金漢宮 → Tottenham Court Road',duration:'10分鐘',price:'£2.80'},
+     restaurant:{name:'Dishoom',icon:'🍛',detail:'倫敦最人氣印度餐廳',price:'£15',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🫖',name:'Twinings 茶葉',detail:'英國百年茶品牌',price:'£5起',where:'Twinings 專門店/超市'},
+    {icon:'🧴',name:'Jo Malone 香水',detail:'英國品牌，比香港平30%',price:'£50起',where:'Covent Garden 旗艦店'},
+  ]},
+  {title:'Tower Bridge・Camden・西區音樂劇',spots:[
+    {time:'09:00',endTime:'12:00',icon:'🏰',title:'倫敦塔 + Tower Bridge',desc:'1000年歷史城堡，皇室珠寶必睇',ticket:'£33.60',tip:'網上買票平10%',
+     transport:{icon:'🚇',title:'Tube',detail:'酒店 → Tower Hill 站',duration:'15分鐘',price:'£2.80'},
+     restaurant:{name:'Borough Market',icon:'🧀',detail:'倫敦最有名美食市場',price:'£12',time:'午餐'}},
+    {time:'14:00',endTime:'17:00',icon:'🎭',title:'Camden Market',desc:'龐克文化市集！vintage衫、街頭美食',ticket:'免費',tip:'週末最熱鬧',
+     transport:{icon:'🚇',title:'Tube',detail:'Tower Hill → Camden Town',duration:'20分鐘',price:'£2.80'},
+     restaurant:null},
+    {time:'19:30',endTime:'22:00',icon:'🎭',title:'West End 音樂劇',desc:'《悲慘世界》《歌劇魅影》《獅子王》',ticket:'£30-100',tip:'TKTS 半價票亭買當日飛最抵',
+     transport:{icon:'🚇',title:'Tube',detail:'Camden → Leicester Square',duration:'15分鐘',price:'£2.80'},
+     restaurant:{name:'Flat Iron',icon:'🥩',detail:'倫敦最抵食牛扒！£12一份',price:'£15',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🎭',name:'West End 紀念品',detail:'音樂劇T恤、場刊、海報',price:'£10起',where:'劇院禮品店'},
+  ]},
+  ]},
+newyork: {
+  flights:[
+    {airline:'國泰航空',code:'CX840',from:'HKG',fromName:'香港',to:'JFK',toName:'紐約甘迺迪',depart:'00:05',arrive:'04:10',duration:'16h05m',price:'$7,000',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Pod Times Square',stars:3,icon:'🏨',location:'Times Square',detail:'設計型酒店，時代廣場步行5分鐘',price:'HK$900/晚',bookUrl:'https://www.booking.com/hotel/us/pod-times-square.html'},
+    {name:'The Plaza',stars:5,icon:'👑',location:'Central Park',detail:'紐約最iconic酒店，中央公園對面',price:'HK$6,000/晚',bookUrl:'https://www.booking.com/hotel/us/the-plaza.html'},
+  ],
+  transportLinks:[{icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/newyork/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-new-york/'}]}],
+  days:[
+  {title:'自由女神・時代廣場・百老匯',spots:[
+    {time:'09:00',endTime:'12:00',icon:'🗽',title:'自由女神 + Ellis Island',desc:'紐約必去！渡輪上島，登冠睇全景',ticket:'渡輪+基座 $24',tip:'提早2個月買 Crown Access 門票',
+     transport:{icon:'🚇',title:'地鐵',detail:'酒店 → South Ferry 站',duration:'20分鐘',price:'$2.90'},
+     restaurant:null},
+    {time:'13:00',endTime:'16:00',icon:'🏙️',title:'時代廣場 + Fifth Avenue',desc:'世界十字路口！百老匯劇院區、第五大道名牌',ticket:'免費',tip:'TKTS 亭買半價百老匯飛',
+     transport:{icon:'🚇',title:'地鐵',detail:'South Ferry → Times Square',duration:'15分鐘',price:'$2.90'},
+     restaurant:{name:"Joe's Pizza",icon:'🍕',detail:'紐約最正宗薄底pizza，$3一slice',price:'$6',time:'午餐'}},
+    {time:'19:30',endTime:'22:00',icon:'🎭',title:'Broadway 百老匯音樂劇',desc:'《Hamilton》《The Lion King》，一生必睇一次',ticket:'$80-200',tip:'TodayTix App 有折扣票',
+     transport:{icon:'🚶',title:'步行',detail:'時代廣場 → 劇院區',duration:'5分鐘',price:'免費'},
+     restaurant:{name:"Junior's Cheesecake",icon:'🍰',detail:'紐約最有名芝士蛋糕',price:'$8',time:'宵夜'}},
+  ],souvenirs:[
+    {icon:'🍪',name:'Levain Bakery 曲奇',detail:'紐約最正曲奇！大大塊朱古力',price:'$4/個',where:'Upper West Side'},
+  ]},
+  {title:'中央公園・博物館・Brooklyn',spots:[
+    {time:'09:00',endTime:'12:00',icon:'🌳',title:'中央公園',desc:'紐約綠洲！Bethesda Fountain、Strawberry Fields',ticket:'免費',tip:'租單車遊公園最正',
+     transport:{icon:'🚇',title:'地鐵',detail:'酒店 → 59th St-Columbus Circle',duration:'15分鐘',price:'$2.90'},
+     restaurant:{name:'The Met 屋頂花園',icon:'🍽️',detail:'大都會博物館屋頂，邊食嘢邊睇中央公園',price:'$15',time:'早午餐'}},
+    {time:'13:00',endTime:'17:00',icon:'🏛️',title:'大都會博物館 (The Met)',desc:'全球最大博物館之一！埃及神廟、歐洲名畫',ticket:'$30',tip:'每月第一個星期五免費入場',
+     transport:{icon:'🚶',title:'步行',detail:'中央公園 → The Met',duration:'5分鐘',price:'免費'},
+     restaurant:null},
+    {time:'18:00',endTime:'21:00',icon:'🌉',title:'Brooklyn Bridge + DUMBO',desc:'行過布魯克林大橋，DUMBO 睇曼哈頓夜景',ticket:'免費',tip:'日落時行橋最靚',
+     transport:{icon:'🚇',title:'地鐵',detail:'The Met → Brooklyn Bridge-City Hall',duration:'20分鐘',price:'$2.90'},
+     restaurant:{name:"Grimaldi's Pizza",icon:'🍕',detail:'布魯克林最有名 coal-fired pizza',price:'$20',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🧢',name:'NY Yankees 帽',detail:'紐約洋基隊棒球帽，美式代表',price:'$35起',where:'第五大道旗艦店'},
+  ]},
+  ]},
 };
 
 // Default fallback for destinations without rich data
@@ -747,7 +1005,41 @@ const sel=document.getElementById('fDest');
 DESTINATIONS.forEach(d=>{const o=document.createElement('option');o.value=d.id;o.textContent=`${d.emoji} ${d.name}（${d.country}）`;sel.appendChild(o);});
 }
 document.querySelectorAll('.tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');renderDestinations(tab.dataset.region);});});
-function pickDest(id){document.getElementById('fDest').value=id;selectedDest=DESTINATIONS.find(d=>d.id===id);document.getElementById('booking').scrollIntoView({behavior:'smooth'});}
+function pickDest(id){showPreview(id);}
+
+function showPreview(id){
+const d=DESTINATIONS.find(x=>x.id===id);
+if(!d)return;
+const hasRich=!!PLAN_DATA[d.id];
+const tagsHtml=d.tags.map(t=>`<span class="preview-tag">${t}</span>`).join('');
+document.getElementById('previewContent').innerHTML=`
+<div class="preview-header">
+<div class="preview-emoji">${d.emoji}</div>
+<div><div class="preview-title">${d.name}</div><div class="preview-country">${d.country}</div></div>
+</div>
+<div class="preview-tags">${tagsHtml}</div>
+<div class="preview-desc">${d.desc}</div>
+<div class="preview-info">
+<div class="preview-info-item"><div class="val">${d.days}</div><div class="lbl">建議日數</div></div>
+<div class="preview-info-item"><div class="val">${d.best}</div><div class="lbl">最佳季節</div></div>
+<div class="preview-info-item"><div class="val">${hasRich?'✅ 真實資料':'📋 AI 生成'}</div><div class="lbl">行程資料</div></div>
+<div class="preview-info-item"><div class="val">HK$5起</div><div class="lbl">方案價錢</div></div>
+</div>
+<div class="preview-btns">
+<button class="preview-btn-close" onclick="closePreview()">返回</button>
+<button class="preview-btn-select" onclick="selectDestFromPreview('${d.id}')">🚀 選擇${d.name}並規劃</button>
+</div>`;
+document.getElementById('previewModal').classList.add('show');
+}
+
+function selectDestFromPreview(id){
+closePreview();
+document.getElementById('fDest').value=id;
+selectedDest=DESTINATIONS.find(d=>d.id===id);
+document.getElementById('booking').scrollIntoView({behavior:'smooth'});
+}
+
+function closePreview(){document.getElementById('previewModal').classList.remove('show');}
 
 // ============ PLAN SELECTION ============
 function selectPlan(plan){
