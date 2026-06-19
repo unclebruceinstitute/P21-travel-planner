@@ -255,6 +255,30 @@ footer a{color:rgba(255,255,255,.9)}
 .submit-btn{display:block;width:100%;padding:18px;background:linear-gradient(135deg,var(--primary),#764ba2);color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:800;cursor:pointer;transition:.3s;margin-top:16px;box-shadow:0 8px 24px rgba(0,102,255,.3)}
 .submit-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,102,255,.4)}
 .submit-btn:active{transform:translateY(0)}
+.multi-city-badge{display:inline-block;background:linear-gradient(135deg,#764ba2,#667eea);color:#fff;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;margin-left:8px}
+.theme-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:.2s;text-align:center}
+.theme-card:hover{border-color:var(--primary);transform:translateY(-2px)}
+.theme-card.selected{border-color:var(--primary);background:rgba(0,102,255,.05);box-shadow:0 4px 16px rgba(0,102,255,.15)}
+.theme-card .theme-icon{font-size:32px;margin-bottom:8px}
+.theme-card .theme-name{font-size:14px;font-weight:700}
+.theme-card .theme-desc{font-size:11px;color:var(--text-light);margin-top:4px}
+.guide-card{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border-radius:16px;padding:24px;margin:16px 0;display:flex;gap:20px;align-items:center}
+.guide-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
+.guide-info{flex:1}
+.guide-name{font-size:18px;font-weight:800}
+.guide-lang{font-size:13px;opacity:.7;margin:4px 0}
+.guide-price{font-size:16px;font-weight:700;color:#f5a623}
+.guide-btn{display:inline-block;padding:10px 24px;background:#00d632;color:#fff;border:none;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;text-decoration:none;transition:.2s}
+.guide-btn:hover{transform:scale(1.05)}
+.ticket-link{display:inline-flex;align-items:center;gap:4px;background:rgba(0,102,255,.08);color:var(--primary);padding:4px 12px;border-radius:100px;font-size:12px;font-weight:600;text-decoration:none;transition:.2s;margin-top:4px}
+.ticket-link:hover{background:var(--primary);color:#fff}
+.route-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:20px;margin:12px 0;cursor:pointer;transition:.2s}
+.route-card:hover{border-color:var(--primary);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.route-card.selected{border-color:var(--primary);background:rgba(0,102,255,.03)}
+.route-cities{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}
+.route-city{background:var(--bg);padding:4px 12px;border-radius:100px;font-size:13px;font-weight:600}
+.route-arrow{color:var(--primary);font-weight:800}
+.route-meta{font-size:12px;color:var(--text-light);margin-top:8px}
 @media(max-width:640px){
 .form-row{grid-template-columns:1fr}
 .hero-stats{gap:24px}
@@ -312,8 +336,12 @@ footer a{color:rgba(255,255,255,.9)}
 <div class="booking-form">
 <div class="form-row">
 <div class="form-group">
-<label>✈️ 目的地</label>
-<select id="fDest"><option value="">請選擇目的地...</option></select>
+<label>✈️ 旅遊類型</label>
+<select id="fTripType" onchange="onTripTypeChange()">
+<option value="single">🏙️ 單城市深度遊</option>
+<option value="multi">🗺️ 多城市路線遊</option>
+<option value="deep">📚 主題深度遊</option>
+</select>
 </div>
 <div class="form-group">
 <label>👥 旅遊人數</label>
@@ -322,6 +350,85 @@ footer a{color:rgba(255,255,255,.9)}
 </select>
 </div>
 </div>
+
+<!-- Single City Destination -->
+<div id="singleCitySection">
+<div class="form-row">
+<div class="form-group">
+<label>📍 目的地</label>
+<select id="fDest"><option value="">請選擇目的地...</option></select>
+</div>
+</div>
+</div>
+
+<!-- Multi City Routes -->
+<div id="multiCitySection" style="display:none">
+<div class="form-group">
+<label>🗺️ 選擇多城市路線</label>
+<div id="routeCards"></div>
+</div>
+</div>
+
+<!-- Deep Tour Themes -->
+<div id="deepTourSection" style="display:none">
+<div class="form-group">
+<label>📍 目的地</label>
+<select id="fDestDeep"><option value="">請選擇目的地...</option></select>
+</div>
+<div class="form-group">
+<label>📚 主題選擇</label>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+<div class="theme-card" onclick="selectTheme(this,'history')" data-theme="history">
+<div class="theme-icon">🏛️</div>
+<div class="theme-name">歷史文化</div>
+<div class="theme-desc">古蹟、博物館、遺產</div>
+</div>
+<div class="theme-card" onclick="selectTheme(this,'pop')" data-theme="pop">
+<div class="theme-icon">🎤</div>
+<div class="theme-name">流行文化</div>
+<div class="theme-desc">K-Pop、動漫、街頭文化</div>
+</div>
+<div class="theme-card" onclick="selectTheme(this,'religious')" data-theme="religious">
+<div class="theme-icon">🙏</div>
+<div class="theme-name">宗教旅遊</div>
+<div class="theme-desc">寺廟、教堂、朝聖</div>
+</div>
+<div class="theme-card" onclick="selectTheme(this,'food')" data-theme="food">
+<div class="theme-icon">🍜</div>
+<div class="theme-name">美食深度遊</div>
+<div class="theme-desc">米其林、夜市、料理體驗</div>
+</div>
+<div class="theme-card" onclick="selectTheme(this,'nature')" data-theme="nature">
+<div class="theme-icon">🌿</div>
+<div class="theme-name">自然生態</div>
+<div class="theme-desc">行山、潛水、國家公園</div>
+</div>
+<div class="theme-card" onclick="selectTheme(this,'luxury')" data-theme="luxury">
+<div class="theme-icon">👑</div>
+<div class="theme-name">奢華之旅</div>
+<div class="theme-desc">五星酒店、SPA、高級餐廳</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Private Guide Option -->
+<div class="form-group">
+<label>🧑‍💼 私人導遊服務（選填）</label>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<label style="display:flex;align-items:center;gap:6px;font-size:14px;padding:10px 16px;background:var(--bg);border-radius:12px;cursor:pointer;border:2px solid transparent;transition:.2s">
+<input type="checkbox" id="fGuide" onchange="toggleGuide()" style="accent-color:var(--primary)"> 需要私人導遊
+</label>
+<div id="guideOptions" style="display:none;flex:1">
+<select id="fGuideDuration" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:14px">
+<option value="half">半日導遊（4小時）- HK$800起</option>
+<option value="full" selected>全日導遊（8小時）- HK$1,500起</option>
+<option value="multi">多日導遊（按日計）- HK$1,200/日</option>
+</select>
+</div>
+</div>
+</div>
+
 <div class="form-row">
 <div class="form-group"><label>📅 出發日期</label><input type="date" id="fStart"></div>
 <div class="form-group"><label>📅 回程日期</label><input type="date" id="fEnd"></div>
@@ -1227,7 +1334,11 @@ return `
 }
 function populateDestSelect(){
 const sel=document.getElementById('fDest');
-DESTINATIONS.forEach(d=>{const o=document.createElement('option');o.value=d.id;o.textContent=`${d.emoji} ${d.name}（${d.country}）`;sel.appendChild(o);});
+const selDeep=document.getElementById('fDestDeep');
+DESTINATIONS.forEach(d=>{
+  const o=document.createElement('option');o.value=d.id;o.textContent=`${d.emoji} ${d.name}（${d.country}）`;sel.appendChild(o);
+  if(selDeep){const o2=document.createElement('option');o2.value=d.id;o2.textContent=`${d.emoji} ${d.name}（${d.country}）`;selDeep.appendChild(o2);}
+});
 }
 document.querySelectorAll('.tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');renderDestinations(tab.dataset.region,document.getElementById('destSearchInput')?.value||'');});});
 function searchDestinations(){const activeTab=document.querySelector('.tab.active');const region=activeTab?activeTab.dataset.region:'all';const search=document.getElementById('destSearchInput')?.value||'';renderDestinations(region,search);}
@@ -1269,14 +1380,42 @@ function closePreview(){document.getElementById('previewModal').classList.remove
 
 // ============ PLAN SELECTION ============
 function selectPlan(plan){
-const dest=document.getElementById('fDest').value;
-if(!dest){alert('請先選擇目的地！');return;}
-selectedDest=DESTINATIONS.find(d=>d.id===dest);
-selectedPlan=plan;
+const tripType=document.getElementById('fTripType').value;
 const s=document.getElementById('fStart').value||'未定',e=document.getElementById('fEnd').value||'未定',p=document.getElementById('fPeople').value;
 const style=document.getElementById('fStyle');const st=style.options[style.selectedIndex].text;
 const budget=document.getElementById('fBudget');const bg=budget.options[budget.selectedIndex].text;
-document.getElementById('planSummary').innerHTML=`<strong>目的地：</strong>${selectedDest.emoji} ${selectedDest.name}（${selectedDest.country}）<br><strong>日期：</strong>${s} → ${e}<br><strong>人數：</strong>${p} 人<br><strong>風格：</strong>${st}<br><strong>預算：</strong>${bg} / 人<br><strong>方案：</strong>${PLAN_NAMES[plan]} — <strong style="color:var(--primary)">HK$${PLAN_PRICES[plan]}</strong>`;
+const hasGuide=document.getElementById('fGuide').checked;
+const guideDuration=hasGuide?document.getElementById('fGuideDuration').value:'';
+const guidePrices={half:800,full:1500,multi:1200};
+const guideCost=hasGuide?guidePrices[guideDuration]*parseInt(p):0;
+
+let destInfo='';
+if(tripType==='single'){
+  const dest=document.getElementById('fDest').value;
+  if(!dest){alert('請先選擇目的地！');return;}
+  selectedDest=DESTINATIONS.find(d=>d.id===dest);
+  destInfo=`<strong>目的地：</strong>${selectedDest.emoji} ${selectedDest.name}（${selectedDest.country}）`;
+}else if(tripType==='multi'){
+  if(!selectedRoute){alert('請先選擇一條多城市路線！');return;}
+  destInfo=`<strong>路線：</strong>${selectedRoute.name}<br><strong>城市：</strong>${selectedRoute.cities.join(' → ')}<br><strong>預計日數：</strong>${selectedRoute.days}`;
+  selectedDest={id:'multi',name:selectedRoute.name,country:'多國',emoji:'🗺️',color:'#764ba2'};
+}else if(tripType==='deep'){
+  const dest=document.getElementById('fDestDeep').value;
+  if(!dest){alert('請先選擇目的地！');return;}
+  selectedDest=DESTINATIONS.find(d=>d.id===dest);
+  const theme=THEME_CONTENT[selectedTheme];
+  destInfo=`<strong>目的地：</strong>${selectedDest.emoji} ${selectedDest.name}（${selectedDest.country}）<br><strong>主題：</strong>${theme.icon} ${theme.name}`;
+}
+
+let guideInfo='';
+if(hasGuide){
+  const guideNames={half:'半日導遊（4小時）',full:'全日導遊（8小時）',multi:'多日導遊（按日計）'};
+  guideInfo=`<br><strong>導遊：</strong>🧑‍💼 ${guideNames[guideDuration]} — <strong style="color:#f5a623">HK$${guideCost.toLocaleString()}</strong>`;
+}
+
+selectedPlan=plan;
+const totalExtra=guideCost;
+document.getElementById('planSummary').innerHTML=`${destInfo}<br><strong>日期：</strong>${s} → ${e}<br><strong>人數：</strong>${p} 人<br><strong>風格：</strong>${st}<br><strong>預算：</strong>${bg} / 人<br><strong>方案：</strong>${PLAN_NAMES[plan]} — <strong style="color:var(--primary)">HK$${PLAN_PRICES[plan]}</strong>${guideInfo}${totalExtra?`<br><strong style="color:#f5a623">導遊附加費：HK$${totalExtra.toLocaleString()}</strong>`:''}`;
 document.getElementById('paymentModal').classList.add('show');
 document.getElementById('payStep1').style.display='block';
 document.getElementById('payStep2').classList.remove('show');
@@ -1442,6 +1581,70 @@ html+=renderBudget(dest,plan,days,numDays,people);
 // === TIPS (Standard + Premium) ===
 if(plan!=='basic'){
 html+=renderTips(dest,plan);
+}
+
+// === MULTI-CITY ROUTE DISPLAY ===
+const tripType=document.getElementById('fTripType')?.value||'single';
+if(tripType==='multi'&&selectedRoute){
+html+=`<h3 style="font-size:22px;font-weight:800;margin:32px 0 16px">🗺️ 多城市路線圖</h3>`;
+html+=`<div class="day-card" style="border-left-color:#764ba2">`;
+html+=`<div style="font-size:18px;font-weight:700;margin-bottom:12px">${selectedRoute.name}</div>`;
+html+=`<div class="route-cities">${selectedRoute.cities.map((c,i)=>`<span class="route-city">${c}</span>${i<selectedRoute.cities.length-1?'<span class="route-arrow">→</span>':''}`).join('')}</div>`;
+html+=`<div style="font-size:14px;color:var(--text-light);margin-top:12px">${selectedRoute.desc}</div>`;
+html+=`<div class="day-budget" style="margin-top:12px"><div class="item">📅 建議 <span class="amount">${selectedRoute.days}</span></div><div class="item">💰 預算 <span class="amount">${selectedRoute.price}</span></div></div>`;
+html+=`</div>`;
+}
+
+// === THEME-SPECIFIC CONTENT ===
+if(tripType==='deep'&&selectedTheme&&THEME_CONTENT[selectedTheme]){
+const theme=THEME_CONTENT[selectedTheme];
+html+=`<h3 style="font-size:22px;font-weight:800;margin:32px 0 16px">${theme.icon} ${theme.name}特色內容</h3>`;
+html+=`<div class="day-card" style="border-left-color:#f5a623">`;
+html+=`<div style="font-size:15px;font-weight:600;margin-bottom:12px">${theme.extras}</div>`;
+html+=`<div style="font-size:14px;color:var(--text-light);margin-bottom:8px">💡 主題貼士：</div>`;
+theme.tips.forEach(tip=>{
+  html+=`<div style="font-size:13px;padding:6px 0;border-bottom:1px solid var(--bg)">• ${tip}</div>`;
+});
+html+=`</div>`;
+}
+
+// === TICKET BOOKING LINKS (Premium) ===
+if(plan==='premium'&&planData&&planData.flights){
+html+=`<h3 style="font-size:22px;font-weight:800;margin:32px 0 16px">🎫 門票預訂連結</h3>`;
+const destName=dest.name;
+const ticketLinks=[
+  {name:'Klook',url:`https://www.klook.com/search/?query=${encodeURIComponent(destName)}`,icon:'🎫',desc:'景點門票、體驗活動'},
+  {name:'GetYourGuide',url:`https://www.getyourguide.com/s/?q=${encodeURIComponent(destName)}`,icon:'🎟️',desc:'導賞團、門票'},
+  {name:'KKday',url:`https://www.kkday.com/zh-tw/sc/search/result?keyword=${encodeURIComponent(destName)}`,icon:'🎪',desc:'亞洲旅遊體驗'},
+];
+html+=`<div class="booking-links">`;
+ticketLinks.forEach(tl=>{
+  html+=`<a href="${tl.url}" target="_blank" class="booking-link flight">${tl.icon} ${tl.name} — ${tl.desc}</a>`;
+});
+html+=`</div>`;
+}
+
+// === PRIVATE GUIDE BOOKING ===
+const hasGuide=document.getElementById('fGuide')?.checked;
+if(hasGuide){
+html+=`<h3 style="font-size:22px;font-weight:800;margin:32px 0 16px">🧑‍💼 你的私人導遊</h3>`;
+const destName=dest.name||'旅遊目的地';
+const guides=[
+  {name:'阿明（本地導遊）',lang:'廣東話、普通話、英文',rating:'⭐⭐⭐⭐⭐ 4.9',exp:'5年經驗，專長歷史文化',price:'HK$1,200/日',wa:`https://wa.me/85291234567?text=${encodeURIComponent(`你好，我想預約${destName}嘅私人導遊服務`)}`},
+  {name:'Sarah（資深導遊）',lang:'英文、普通話、日文',rating:'⭐⭐⭐⭐⭐ 4.8',exp:'8年經驗，專長美食購物',price:'HK$1,500/日',wa:`https://wa.me/85298765432?text=${encodeURIComponent(`Hi, I'd like to book a private guide for ${destName}`)}`},
+];
+guides.forEach(g=>{
+  html+=`<div class="guide-card">
+  <div class="guide-avatar">🧑‍💼</div>
+  <div class="guide-info">
+  <div class="guide-name">${g.name}</div>
+  <div class="guide-lang">${g.lang}</div>
+  <div style="font-size:12px;opacity:.7">${g.rating} · ${g.exp}</div>
+  <div class="guide-price">${g.price}</div>
+  <a href="${g.wa}" target="_blank" class="guide-btn">📱 WhatsApp 預約</a>
+  </div>
+  </div>`;
+});
 }
 
 // === Print/Save ===
@@ -1703,10 +1906,110 @@ observer.observe(el);
 
 // ============ SCROLL TO PRICING ============
 function scrollToPricing(){
-const dest=document.getElementById('fDest').value;
-if(!dest){alert('請先選擇目的地！');return;}
+const tripType=document.getElementById('fTripType').value;
+if(tripType==='single'){
+  const dest=document.getElementById('fDest').value;
+  if(!dest){alert('請先選擇目的地！');return;}
+}else if(tripType==='multi'){
+  if(!selectedRoute){alert('請先選擇一條多城市路線！');return;}
+}else if(tripType==='deep'){
+  const dest=document.getElementById('fDestDeep').value;
+  if(!dest){alert('請先選擇目的地！');return;}
+  if(!selectedTheme){alert('請先選擇一個旅遊主題！');return;}
+}
 document.getElementById('pricing').scrollIntoView({behavior:'smooth'});
 }
+
+// ============ MULTI-CITY ROUTES ============
+const MULTI_ROUTES=[
+{id:'jp-golden',name:'🇯🇵 日本黃金路線',cities:['東京','富士山','京都','大阪','奈良'],days:'7-10日',price:'$8,000-15,000',desc:'日本最經典路線，由東京玩到大阪，一次睇晒現代同傳統'},
+{id:'kr-combo',name:'🇰🇷 韓國全景遊',cities:['首爾','釜山','濟州島'],days:'6-8日',price:'$5,000-10,000',desc:'首爾購物+釜山海鮮+濟州島自然風光'},
+{id:'sea-backpack',name:'🇹🇭 東南亞精華遊',cities:['曼谷','清邁','布吉','新加坡'],days:'10-14日',price:'$6,000-12,000',desc:'泰國城市+海灘+新加坡，東南亞一次玩齊'},
+{id:'europe-classic',name:'🇫🇷 歐洲經典三國',cities:['巴黎','倫敦','阿姆斯特丹'],days:'10-14日',price:'$15,000-25,000',desc:'英法荷三國連遊，歐洲之星火車串連'},
+{id:'tw-round',name:'🇹🇼 台灣環島遊',cities:['台北','台中','高雄','墾丁','花蓮','台北'],days:'7-10日',price:'$5,000-8,000',desc:'台灣環島一圈，夜市+海灘+太魯閣+溫泉'},
+{id:'cn-pearl',name:'🇨🇳 大灣區精華遊',cities:['深圳','廣州','珠海','澳門','香港'],days:'5-7日',price:'$3,000-6,000',desc:'大灣區五城聯遊，美食購物主題'},
+{id:'us-east',name:'🇺🇸 美國東岸遊',cities:['紐約','費城','華盛頓DC','波士頓'],days:'10-14日',price:'$15,000-25,000',desc:'美國東岸四大城市，歷史文化+現代都市'},
+{id:'aus-east',name:'🇦🇺 澳洲東岸遊',cities:['悉尼','墨爾本','黃金海岸','布里斯本'],days:'10-14日',price:'$12,000-20,000',desc:'澳洲東岸陽光之旅，大堡礁+大洋路'},
+];
+let selectedRoute=null;
+
+function renderRouteCards(){
+const container=document.getElementById('routeCards');
+if(!container)return;
+container.innerHTML=MULTI_ROUTES.map(r=>`
+<div class="route-card" onclick="selectRoute('${r.id}')" id="route-${r.id}">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div style="font-size:16px;font-weight:700">${r.name}</div>
+<div class="multi-city-badge">${r.days}</div>
+</div>
+<div class="route-cities">${r.cities.map((c,i)=>`<span class="route-city">${c}</span>${i<r.cities.length-1?'<span class="route-arrow">→</span>':''}`).join('')}</div>
+<div style="font-size:13px;color:var(--text-light);margin:8px 0">${r.desc}</div>
+<div class="route-meta">💰 預算：${r.price}</div>
+</div>`).join('');
+}
+
+function selectRoute(id){
+selectedRoute=MULTI_ROUTES.find(r=>r.id===id);
+document.querySelectorAll('.route-card').forEach(c=>c.classList.remove('selected'));
+document.getElementById('route-'+id)?.classList.add('selected');
+}
+
+// ============ THEMES ============
+let selectedTheme=null;
+function selectTheme(el,theme){
+selectedTheme=theme;
+document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('selected'));
+el.classList.add('selected');
+}
+
+// ============ TRIP TYPE CHANGE ============
+function onTripTypeChange(){
+const type=document.getElementById('fTripType').value;
+document.getElementById('singleCitySection').style.display=type==='single'?'block':'none';
+document.getElementById('multiCitySection').style.display=type==='multi'?'block':'none';
+document.getElementById('deepTourSection').style.display=type==='deep'?'block':'none';
+if(type==='multi')renderRouteCards();
+}
+
+// ============ GUIDE TOGGLE ============
+function toggleGuide(){
+const checked=document.getElementById('fGuide').checked;
+document.getElementById('guideOptions').style.display=checked?'block':'none';
+}
+
+// ============ THEME CONTENT ============
+const THEME_CONTENT={
+history:{
+  icon:'🏛️',name:'歷史文化遊',
+  tips:['參觀博物館建議預留2-3小時','部分古蹟需要導賞團才能進入','帶備輕便鞋，古蹟區通常要行好多路'],
+  extras:'每個景點會提供歷史背景、建築特色、文化意義'
+},
+pop:{
+  icon:'🎤',name:'流行文化遊',
+  tips:['K-Pop粉絲記得預約SM/YG/JYP大樓參觀','動漫迷必去秋葉原/Animate/漫畫咖啡','街頭文化景點通常免費'],
+  extras:'包含偶像經紀公司、動漫聖地、潮流街區、音樂場館'
+},
+religious:{
+  icon:'🙏',name:'宗教旅遊',
+  tips:['進入寺廟/教堂請穿著得體','部分宗教場所禁止拍照','尊重當地宗教習俗同禁忌'],
+  extras:'涵蓋佛教寺廟、神社、教堂、清真寺、朝聖路線'
+},
+food:{
+  icon:'🍜',name:'美食深度遊',
+  tips:['米其林餐廳建議提前1個月預約','夜市小食帶現金最方便','可以參加料理體驗班學整當地菜'],
+  extras:'米其林餐廳、地道街頭小食、料理體驗、食材市場'
+},
+nature:{
+  icon:'🌿',name:'自然生態遊',
+  tips:['行山帶充足水同防曬','潛水需要預約教練','國家公園通常需要入場費'],
+  extras:'國家公園、行山路線、海灘潛水、生態導賞'
+},
+luxury:{
+  icon:'👑',name:'奢華之旅',
+  tips:['五星酒店通常有免費SPA設施','高級餐廳有dress code','私人導遊可以安排VIP體驗'],
+  extras:'五星酒店、米其林餐廳、SPA、私人導遊、VIP體驗'
+}
+};
 </script>
 </body>
 </html>
