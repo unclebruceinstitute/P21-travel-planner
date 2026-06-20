@@ -348,7 +348,8 @@ section{padding:40px 16px}
 </div>
 <div class="hero-stats">
 <div class="hero-stat"><span class="num">27+</span><span class="label">熱門目的地</span></div>
-<div class="hero-stat"><span class="num">3</span><span class="label">方案選擇</span></div>
+<div class="hero-stat"><span class="num">14</span><span class="label">多城市路線</span></div>
+<div class="hero-stat"><span class="num">6</span><span class="label">主題深度遊</span></div>
 <div class="hero-stat"><span class="num">HK$5</span><span class="label">起</span></div>
 </div>
 </div>
@@ -1652,25 +1653,98 @@ const theme=THEME_CONTENT[selectedTheme];
 html+=`<h3 style="font-size:22px;font-weight:800;margin:32px 0 16px">${theme.icon} ${theme.name}特色內容</h3>`;
 html+=`<div class="day-card" style="border-left-color:#f5a623">`;
 html+=`<div style="font-size:15px;font-weight:600;margin-bottom:12px">${theme.extras}</div>`;
-html+=`<div style="font-size:14px;color:var(--text-light);margin-bottom:8px">💡 主題貼士：</div>`;
+
+// Show per-destination highlights if available
+if(theme.destHighlights&&theme.destHighlights[dest.id]){
+  const hl=theme.destHighlights[dest.id];
+  html+=`<div style="font-size:16px;font-weight:700;margin:16px 0 8px">📍 ${hl.title}</div>`;
+  html+=`<div style="display:grid;gap:8px">`;
+  hl.spots.forEach((spot,i)=>{
+    html+=`<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--bg);border-radius:10px;font-size:13px"><span style="background:var(--primary);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">${i+1}</span><span>${spot}</span></div>`;
+  });
+  html+=`</div>`;
+} else if(theme.destHighlights){
+  // Show a random highlight if destination-specific not available
+  const keys=Object.keys(theme.destHighlights);
+  const randomKey=keys[Math.floor(Math.random()*keys.length)];
+  const hl=theme.destHighlights[randomKey];
+  html+=`<div style="font-size:14px;color:var(--text-light);margin:8px 0">💡 以下係其他目的地嘅${theme.name}精華（參考）：</div>`;
+  html+=`<div style="font-size:16px;font-weight:700;margin:8px 0">📍 ${hl.title}</div>`;
+  hl.spots.slice(0,3).forEach((spot,i)=>{
+    html+=`<div style="font-size:13px;padding:6px 0;border-bottom:1px solid var(--bg)">• ${spot}</div>`;
+  });
+}
+
+html+=`<div style="font-size:14px;color:var(--text-light);margin-top:16px">💡 主題貼士：</div>`;
 theme.tips.forEach(tip=>{
   html+=`<div style="font-size:13px;padding:6px 0;border-bottom:1px solid var(--bg)">• ${tip}</div>`;
 });
 html+=`</div>`;
 }
 
-// === TICKET BOOKING LINKS (Premium) ===
-if(plan==='premium'&&planData&&planData.flights){
+// === TICKET BOOKING LINKS (Premium + Standard) ===
+if(plan!=='basic'&&planData&&planData.flights){
 html+=`<h3 style="font-size:22px;font-weight:800;margin:32px 0 16px">🎫 門票預訂連結</h3>`;
 const destName=dest.name;
+const destId=dest.id;
 const ticketLinks=[
-  {name:'Klook',url:`https://www.klook.com/search/?query=${encodeURIComponent(destName)}`,icon:'🎫',desc:'景點門票、體驗活動'},
-  {name:'GetYourGuide',url:`https://www.getyourguide.com/s/?q=${encodeURIComponent(destName)}`,icon:'🎟️',desc:'導賞團、門票'},
-  {name:'KKday',url:`https://www.kkday.com/zh-tw/sc/search/result?keyword=${encodeURIComponent(destName)}`,icon:'🎪',desc:'亞洲旅遊體驗'},
+  {name:'Klook',url:`https://www.klook.com/search/?query=${encodeURIComponent(destName)}`,icon:'🎫',desc:'景點門票、體驗活動、交通'},
+  {name:'GetYourGuide',url:`https://www.getyourguide.com/s/?q=${encodeURIComponent(destName)}`,icon:'🎟️',desc:'導賞團、skip-the-line門票'},
+  {name:'KKday',url:`https://www.kkday.com/zh-tw/sc/search/result?keyword=${encodeURIComponent(destName)}`,icon:'🎪',desc:'亞洲旅遊體驗、門票'},
+  {name:'Trip.com 門票',url:`https://www.trip.com/travel-guide/${encodeURIComponent(destName)}/`,icon:'🎪',desc:'景點門票+酒店套票'},
 ];
-html+=`<div class="booking-links">`;
+// Add destination-specific ticket links
+const specificTickets={
+  tokyo:[
+    {name:'teamLab Borderless 門票',url:'https://www.klook.com/activity/2780-teamlab-borderless-tokyo/',icon:'🎨',desc:'數碼藝術博物館'},
+    {name:'東京晴空塔門票',url:'https://www.klook.com/activity/921-tokyo-skytree/',icon:'🗼',desc:'360度東京全景'},
+    {name:'JR Pass',url:'https://japanrailpass.net/',icon:'🚄',desc:'日本火車通票'},
+  ],
+  osaka:[
+    {name:'USJ 環球影城門票',url:'https://www.klook.com/activity/1360-universal-studios-japan/',icon:'🎢',desc:'哈利波特+任天堂世界'},
+    {name:'大阪周遊卡',url:'https://www.klook.com/activity/2675-osaka-amazing-pass/',icon:'🎫',desc:'50+景點免費入場'},
+  ],
+  seoul:[
+    {name:'N首爾塔展望台',url:'https://www.klook.com/activity/922-n-seoul-tower/',icon:'🗼',desc:'首爾地標夜景'},
+    {name:'Klook 韓國體驗',url:'https://www.klook.com/zh-TK/city/23-seoul/all/',icon:'🇰🇷',desc:'韓服體驗+K-Pop'},
+  ],
+  bangkok:[
+    {name:'大皇宮+玉佛寺',url:'https://www.klook.com/activity/689-grand-palace-emerald-buddha/',icon:'🛕',desc:'泰國最神聖景點'},
+    {name:'曼谷河畔夜遊',url:'https://www.klook.com/activity/755-bangkok-river-cruise/',icon:'🚢',desc:'昭披耶河晚餐遊船'},
+  ],
+  paris:[
+    {name:'艾菲爾鐵塔門票',url:'https://www.getyourguide.com/paris-l16/tower-eiffel-skip-the-line-tickets-t395/',icon:'🗼',desc:'Skip-the-line快速入場'},
+    {name:'羅浮宮門票',url:'https://www.getyourguide.com/paris-l16/louvre-museum-skip-the-line-tickets-t416/',icon:'🎨',desc:'蒙娜麗莎+羅浮宮'},
+  ],
+  london:[
+    {name:'倫敦塔門票',url:'https://www.getyourguide.com/london-l57/tower-of-london-skip-the-line-tickets-t14/',icon:'🏰',desc:'皇室珠寶+城堡'},
+    {name:'West End 音樂劇',url:'https://www.todaytix.com/london',icon:'🎭',desc:'半價音樂劇門票'},
+  ],
+  rome:[
+    {name:'鬥獸場門票',url:'https://www.getyourguide.com/rome-l74/colosseum-skip-the-line-tickets-t468/',icon:'🏛️',desc:'Skip-the-line入場'},
+    {name:'梵蒂岡博物館',url:'https://www.getyourguide.com/rome-l74/vatican-museums-skip-the-line-tickets-t446/',icon:'⛪',desc:'西斯汀教堂+博物館'},
+  ],
+  newyork:[
+    {name:'自由女神門票',url:'https://www.getyourguide.com/new-york-l60/statue-of-liberty-tickets-t429/',icon:'🗽',desc:'渡輪+基座+博物館'},
+    {name:'百老匯半價票',url:'https://www.todaytix.com/new-york',icon:'🎭',desc:'TKTS半價票亭'},
+  ],
+  sydney:[
+    {name:'悉尼歌劇院導賞',url:'https://www.klook.com/activity/1303-sydney-opera-house/',icon:'🎭',desc:'入內導賞團'},
+    {name:'Taronga Zoo',url:'https://www.klook.com/activity/1305-taronga-zoo/',icon:'🦘',desc:'考拉+袋鼠+海港景觀'},
+  ],
+  singapore:[
+    {name:'Gardens by the Bay',url:'https://www.klook.com/activity/812-gardens-by-the-bay/',icon:'🌳',desc:'超級樹+Cloud Forest'},
+    {name:'聖淘沙環球影城',url:'https://www.klook.com/activity/818-universal-studios-singapore/',icon:'🎢',desc:'東南亞唯一環球影城'},
+  ],
+};
+if(specificTickets[destId]){
+  specificTickets[destId].forEach(st=>{
+    ticketLinks.unshift(st);
+  });
+}
+html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:16px 0">`;
 ticketLinks.forEach(tl=>{
-  html+=`<a href="${tl.url}" target="_blank" class="booking-link flight">${tl.icon} ${tl.name} — ${tl.desc}</a>`;
+  html+=`<a href="${tl.url}" target="_blank" class="booking-link flight" style="justify-content:flex-start;padding:14px 18px">${tl.icon} <span style="flex:1"><strong>${tl.name}</strong><br><span style="font-size:11px;opacity:.7">${tl.desc}</span></span> <span style="font-size:12px">→</span></a>`;
 });
 html+=`</div>`;
 }
@@ -1680,22 +1754,41 @@ const hasGuide=document.getElementById('fGuide')?.checked;
 if(hasGuide){
 html+=`<h3 style="font-size:22px;font-weight:800;margin:32px 0 16px">🧑‍💼 你的私人導遊</h3>`;
 const destName=dest.name||'旅遊目的地';
-const guides=[
-  {name:'阿明（本地導遊）',lang:'廣東話、普通話、英文',rating:'⭐⭐⭐⭐⭐ 4.9',exp:'5年經驗，專長歷史文化',price:'HK$1,200/日',wa:`https://wa.me/85291234567?text=${encodeURIComponent(`你好，我想預約${destName}嘅私人導遊服務`)}`},
-  {name:'Sarah（資深導遊）',lang:'英文、普通話、日文',rating:'⭐⭐⭐⭐⭐ 4.8',exp:'8年經驗，專長美食購物',price:'HK$1,500/日',wa:`https://wa.me/85298765432?text=${encodeURIComponent(`Hi, I'd like to book a private guide for ${destName}`)}`},
+const destCountry=dest.country||'';
+
+// Real guide booking platforms
+html+=`<div class="day-card" style="border-left-color:#10b981">`;
+html+=`<div style="font-size:16px;font-weight:700;margin-bottom:12px">📱 私人導遊預約平台</div>`;
+html+=`<div style="font-size:13px;color:var(--text-light);margin-bottom:16px">以下平台提供${destName}當地認證導遊，支持即時預約</div>`;
+
+const guidePlatforms=[
+  {name:'Withlocals',url:`https://www.withlocals.com/search/${encodeURIComponent(destName.toLowerCase())}/`,desc:'本地人帶你深度遊，支持中文導遊',icon:'🏠',badge:'推薦'},
+  {name:'GetYourGuide 私人團',url:`https://www.getyourguide.com/s/?q=${encodeURIComponent(destName+'+private+tour')}`,desc:'專業導遊私人團，可定制路線',icon:'🎯',badge:'專業'},
+  {name:'ToursByLocals',url:`https://www.toursbylocals.com/${encodeURIComponent(destName.toLowerCase())}-tours`,desc:'當地導遊一對一服務',icon:'👤',badge:'一對一'},
+  {name:'Klook 私人團',url:`https://www.klook.com/search/?query=${encodeURIComponent(destName+'+private+guide')}`,desc:'亞洲區導遊服務，中文支持好',icon:'🎫',badge:'亞洲'},
 ];
-guides.forEach(g=>{
-  html+=`<div class="guide-card">
-  <div class="guide-avatar">🧑‍💼</div>
-  <div class="guide-info">
-  <div class="guide-name">${g.name}</div>
-  <div class="guide-lang">${g.lang}</div>
-  <div style="font-size:12px;opacity:.7">${g.rating} · ${g.exp}</div>
-  <div class="guide-price">${g.price}</div>
-  <a href="${g.wa}" target="_blank" class="guide-btn">📱 WhatsApp 預約</a>
-  </div>
-  </div>`;
+
+html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:12px 0">`;
+guidePlatforms.forEach(gp=>{
+  html+=`<a href="${gp.url}" target="_blank" style="display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg);border-radius:12px;text-decoration:none;color:var(--text);border:2px solid var(--border);transition:.2s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+  <span style="font-size:28px">${gp.icon}</span>
+  <span style="flex:1">
+    <span style="font-weight:700;font-size:14px">${gp.name}</span>
+    <span style="display:inline-block;background:rgba(16,185,129,.15);color:#10b981;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;margin-left:6px">${gp.badge}</span>
+    <br><span style="font-size:12px;color:var(--text-light)">${gp.desc}</span>
+  </span>
+  <span style="font-size:14px;color:var(--primary)">→</span>
+  </a>`;
 });
+html+=`</div>`;
+
+// WhatsApp group for guide inquiry
+const waUrl=`https://wa.me/85291234567?text=${encodeURIComponent(`你好，我想查詢${destName}嘅私人導遊服務`)}`;
+html+=`<div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+<a href="${waUrl}" target="_blank" class="guide-btn" style="display:inline-flex;align-items:center;gap:8px">📱 WhatsApp 查詢導遊</a>
+<a href="https://t.me/UncleBruceHermes_MacMini_bot?text=${encodeURIComponent(`我想預約${destName}私人導遊`)}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;background:#0088cc;color:#fff;border:none;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none">✈️ Telegram 查詢</a>
+</div>`;
+html+=`</div>`;
 }
 
 // === Print/Save ===
@@ -1986,17 +2079,36 @@ const MULTI_ROUTES=[
 {id:'cn-pearl',name:'🇨🇳 大灣區精華遊',cities:['深圳','廣州','珠海','澳門','香港'],days:'5-7日',price:'$3,000-6,000',desc:'大灣區五城聯遊，美食購物主題'},
 {id:'us-east',name:'🇺🇸 美國東岸遊',cities:['紐約','費城','華盛頓DC','波士頓'],days:'10-14日',price:'$15,000-25,000',desc:'美國東岸四大城市，歷史文化+現代都市'},
 {id:'aus-east',name:'🇦🇺 澳洲東岸遊',cities:['悉尼','墨爾本','黃金海岸','布里斯本'],days:'10-14日',price:'$12,000-20,000',desc:'澳洲東岸陽光之旅，大堡礁+大洋路'},
+{id:'jp-intra',name:'🇯🇵 日本國內深度遊',cities:['東京','京都','大阪','奈良','神戶'],days:'7-10日',price:'$8,000-14,000',desc:'日本國內五城聯遊，由東京新幹線到關西，一次體驗現代與傳統'},
+{id:'kr-intra',name:'🇰🇷 韓國國內深度遊',cities:['首爾','大田','全州','光州','釜山','慶州'],days:'8-12日',price:'$6,000-12,000',desc:'韓國由北到南，首爾繁華→全州韓屋→釜山海鮮→慶州古都'},
+{id:'it-intra',name:'🇮🇹 意大利國內深度遊',cities:['羅馬','佛羅倫斯','威尼斯','米蘭'],days:'10-14日',price:'$12,000-22,000',desc:'意大利經典四城，由羅馬帝國→文藝復興→水城→時尚之都'},
+{id:'tw-deep',name:'🇹🇼 台灣深度文化遊',cities:['台北','九份','日月潭','阿里山','高雄','墾丁'],days:'8-10日',price:'$5,000-9,000',desc:'台灣深度文化之旅，由北到南精華，夜市+茶園+海灘+古蹟'},
+{id:'cn-south',name:'🇨🇳 華南深度遊',cities:['廣州','佛山','肇慶','桂林','陽朔'],days:'7-10日',price:'$3,000-7,000',desc:'廣東+廣西聯遊，粵菜+功夫+山水甲天下'},
+{id:'th-intra',name:'🇹🇭 泰國國內深度遊',cities:['曼谷','大城','清邁','清萊','布吉'],days:'10-14日',price:'$5,000-10,000',desc:'泰國由南到北，曼谷繁華→大城古都→清邁古城→布吉海灘'},
 ];
 let selectedRoute=null;
 
 function renderRouteCards(){
 const container=document.getElementById('routeCards');
 if(!container)return;
-container.innerHTML=MULTI_ROUTES.map(r=>`
+const intraCountryIds=['jp-intra','kr-intra','it-intra','tw-deep','cn-south','th-intra','tw-round','cn-pearl'];
+container.innerHTML=`<div style="margin-bottom:16px"><div style="font-size:14px;font-weight:600;color:var(--text-light);margin-bottom:4px">🌍 跨國路線</div></div>`+
+MULTI_ROUTES.filter(r=>!intraCountryIds.includes(r.id)).map(r=>`
 <div class="route-card" onclick="selectRoute('${r.id}')" id="route-${r.id}">
 <div style="display:flex;justify-content:space-between;align-items:center">
 <div style="font-size:16px;font-weight:700">${r.name}</div>
 <div class="multi-city-badge">${r.days}</div>
+</div>
+<div class="route-cities">${r.cities.map((c,i)=>`<span class="route-city">${c}</span>${i<r.cities.length-1?'<span class="route-arrow">→</span>':''}`).join('')}</div>
+<div style="font-size:13px;color:var(--text-light);margin:8px 0">${r.desc}</div>
+<div class="route-meta">💰 預算：${r.price}</div>
+</div>`).join('')+
+`<div style="margin-top:24px;margin-bottom:16px"><div style="font-size:14px;font-weight:600;color:var(--text-light);margin-bottom:4px">🏠 同一國家深度遊</div></div>`+
+MULTI_ROUTES.filter(r=>intraCountryIds.includes(r.id)).map(r=>`
+<div class="route-card" onclick="selectRoute('${r.id}')" id="route-${r.id}" style="border-left:4px solid #10b981">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div style="font-size:16px;font-weight:700">${r.name}</div>
+<div style="display:flex;gap:6px"><span style="display:inline-block;background:rgba(16,185,129,.15);color:#10b981;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600">🏠 同一國家</span><div class="multi-city-badge">${r.days}</div></div>
 </div>
 <div class="route-cities">${r.cities.map((c,i)=>`<span class="route-city">${c}</span>${i<r.cities.length-1?'<span class="route-arrow">→</span>':''}`).join('')}</div>
 <div style="font-size:13px;color:var(--text-light);margin:8px 0">${r.desc}</div>
@@ -2037,18 +2149,42 @@ document.getElementById('guideOptions').style.display=checked?'block':'none';
 const THEME_CONTENT={
 history:{
   icon:'🏛️',name:'歷史文化遊',
-  tips:['參觀博物館建議預留2-3小時','部分古蹟需要導賞團才能進入','帶備輕便鞋，古蹟區通常要行好多路'],
-  extras:'每個景點會提供歷史背景、建築特色、文化意義'
+  tips:['參觀博物館建議預留2-3小時','部分古蹟需要導賞團才能進入','帶備輕便鞋，古蹟區通常要行好多路','建議租用語音導賞或請當地導遊講解','留意古蹟開放時間，部分逢週一休館'],
+  extras:'每個景點會提供歷史背景、建築特色、文化意義',
+  destHighlights:{
+    tokyo:{title:'東京歷史文化精華',spots:['江戶東京博物館 — 重現江戶時代街景','皇居外苑 — 德川幕府居城遺址','淺草寺 — 東京最古老寺廟(628年)','上野公園 — 明治維新歷史園區','國立博物館 — 日本最大收藏']},
+    kyoto:{title:'京都千年古都',spots:['伏見稻荷大社 — 千本鳥居，日本最iconic神社','金閣寺 — 足利義滿建嘅金碧輝煌寺廟','清水寺 — 京都最靚寺廟，清水舞台','二條城 — 德川家康城堡，鶯聲走廊','嵐山竹林 — 日本最美竹林小徑']},
+    seoul:{title:'首爾朝鮮歷史',spots:['景福宮 — 朝鮮皇宮，光化門守衛換班','北村韓屋村 — 朝鮮時代韓屋群','昌德宮 — 世界文化遺產','宗廟 — 朝鮮王室祭祀場所','韓國國立博物館 — 韓國歷史全覽']},
+    rome:{title:'羅馬帝國遺產',spots:['鬥獸場 — 2000年角鬥場，世界七大奇蹟','羅馬廣場 — 帝國政治中心遺址','萬神殿 — 2000年圓頂建築','梵蒂岡 — 聖伯多祿大殿+西斯汀教堂','許願池 — 巴洛克雕刻噴泉']},
+    paris:{title:'巴黎藝術歷史',spots:['羅浮宮 — 全球最大博物館，蒙娜麗莎','凡爾賽宮 — 法國皇室宮殿','奧賽博物館 — 印派畫作聖地','巴黎聖母院 — 哥德式建築代表','凱旋門 — 拿破崙紀念建築']},
+    london:{title:'倫敦皇室歷史',spots:['大英博物館 — 全球最大博物館(免費)','倫敦塔 — 1000年城堡，皇室珠寶','白金漢宮 — 英國皇宮+換班儀式','西敏寺 — 皇室加冕教堂','大笨鐘+國會大廈']}
+  }
 },
 pop:{
   icon:'🎤',name:'流行文化遊',
-  tips:['K-Pop粉絲記得預約SM/YG/JYP大樓參觀','動漫迷必去秋葉原/Animate/漫畫咖啡','街頭文化景點通常免費'],
-  extras:'包含偶像經紀公司、動漫聖地、潮流街區、音樂場館'
+  tips:['K-Pop粉絲記得預約SM/YG/JYP大樓參觀','動漫迷必去秋葉原/Animate/漫畫咖啡','街頭文化景點通常免費','帶定SD卡，聖地打卡影好多相','部分偶像周邊只喺特定商店有售'],
+  extras:'包含偶像經紀公司、動漫聖地、潮流街區、音樂場館',
+  destHighlights:{
+    tokyo:{title:'東京流行文化',spots:['秋葉原 — 動漫迷天堂，Animate+女僕咖啡','澀谷十字路口 — 世界最繁忙路口','原宿竹下通 — 日本潮流文化發源地','中野百老匯 — 動漫古董收藏','TeamLab — 數碼藝術博物館']},
+    seoul:{title:'首爾K-Pop聖地',spots:['SM Town Museum — EXO/NCT主題體驗','YG Entertainment 大樓 — BLACKPINK出道地','弘大音樂街 — 周末街頭表演','COEX K-Pop Square — 巨型LED螢幕','明洞韓流體驗館 — 韓劇場景重現']},
+    osaka:{title:'大阪動漫文化',spots:['日本橋 — 大阪版秋葉原','環球影城任天堂世界 — 馬力歐樂園','Animate梅田 — 動漫周邊','難波Grand Kagetsu — 吉本新喜劇','道頓堀 — 大阪庶民文化']},
+    bangkok:{title:'曼谷街頭文化',spots:['Chatuchak市集 — 全球最大週末市集','考山路 — 背包客文化聖地','Jodd Fairs — 最潮夜市','曼谷街頭藝術區 — 塗鴉牆打卡','泰拳體驗館 — 泰國國技']},
+    newyork:{title:'紐約流行文化',spots:['百老匯劇院區 — 世界音樂劇中心','時代廣場 — 世界十字路口','荷里活星光大道 — 明星星星','SoHo潮流區 — 設計師品牌街','布魯克林街頭藝術']},
+    london:{title:'倫敦流行文化',spots:['Camden Market — 龐克文化市集','West End音樂劇 — 悲慘世界/歌劇魅影','Abbey Road — 披頭四聖地','Notting Hill — 電影取景地','Shoreditch塗鴉區']}
+  }
 },
 religious:{
   icon:'🙏',name:'宗教旅遊',
-  tips:['進入寺廟/教堂請穿著得體','部分宗教場所禁止拍照','尊重當地宗教習俗同禁忌'],
-  extras:'涵蓋佛教寺廟、神社、教堂、清真寺、朝聖路線'
+  tips:['進入寺廟/教堂請穿著得體（長褲+有袖衫）','部分宗教場所禁止拍照，留意指示牌','尊重當地宗教習俗同禁忌','部分寺廟需要脫鞋入內','朝聖路線建議請導遊帶領'],
+  extras:'涵蓋佛教寺廟、神社、教堂、清真寺、朝聖路線',
+  destHighlights:{
+    kyoto:{title:'京都寺廟巡禮',spots:['伏見稻荷大社 — 千本鳥居，日本最著名神社','清水寺 — 京都最古老寺廟之一','金閣寺 — 臨濟宗相國寺派','銀閣寺 — 禪宗美學代表','嵐山天龍寺 — 世界文化遺產']},
+    rome:{title:'羅馬梵蒂岡朝聖',spots:['梵蒂岡聖伯多祿大殿 — 天主教世界中心','西斯汀教堂 — 米開朗基羅天頂畫','聖保羅大殿 — 四大殿之一','聖母大殿 — 羅馬最古老教堂','朝聖七教堂路線']},
+    bangkok:{title:'曼谷佛教聖地',spots:['大皇宮+玉佛寺 — 泰國最神聖建築','臥佛寺 — 最大臥佛','鄭王廟(黎明寺) — 泰國艾菲爾鐵塔','金山寺 — 曼谷最高佛寺','四面佛 — 最靈驗嘅神壇']},
+    bali:{title:'峇里島印度教寺廟',spots:['海神廟(Tanah Lot) — 海上寺廟','聖泉寺(Tirta Empul) — 淨化儀式','百沙基母廟 — 峇里島最大寺廟群','烏布皇宮 — 皇室廟宇','母廟(Besakih) — 峇里島之母']},
+    osaka:{title:'大阪宗教文化',spots:['住吉大社 — 大阪最古老神社','四天王寺 — 日本最早佛教寺院','石切劔箭神社 — 求姻緣聖地','大阪天滿宮 — 學問之神','大念佛寺 — 念佛宗總本山']},
+    taipei:{title:'台灣宗教文化',spots:['龍山寺 — 台北最古老廟宇','行天宮 — 台北最大關帝廟','北投地熱谷+溫泉寺','佛光山 — 世界最大佛教道場之一','鹿港天后宮 — 媽祖信仰中心']}
+  }
 },
 food:{
   icon:'🍜',name:'美食深度遊',
