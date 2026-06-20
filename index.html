@@ -22,6 +22,8 @@ nav{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,.95);backdro
 .nav-links a{color:var(--text);font-weight:500;font-size:15px;transition:.2s}
 .nav-links a:hover{color:var(--primary)}
 .nav-cta{background:var(--primary);color:#fff!important;padding:8px 20px;border-radius:100px;font-weight:600;font-size:14px}
+.hamburger{display:none}
+@media(max-width:640px){.hamburger{display:flex!important}}
 .hero{margin-top:64px;background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);padding:60px 24px 50px;text-align:center;color:#fff;position:relative;overflow:hidden}
 .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(transparent,var(--bg))}
 .hero h1{font-size:clamp(28px,5vw,48px);font-weight:900;margin-bottom:12px;text-shadow:0 2px 20px rgba(0,0,0,.2)}
@@ -309,14 +311,21 @@ footer a{color:rgba(255,255,255,.9)}
 .hero-stats{gap:16px}
 .hero-stat{padding:12px 16px}
 .hero-stat .num{font-size:28px}
-.pricing-grid{grid-template-columns:1px}
+.pricing-grid{grid-template-columns:1fr}
 .price-card.featured{transform:none}
 .price-card.featured:hover{transform:translateY(-4px)}
 .result-meta{gap:16px}
 .flight-details{grid-template-columns:1fr}
 .day-budget{flex-direction:column}
 .dest-grid{grid-template-columns:1fr}
-.nav-links{gap:16px}
+.nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:rgba(255,255,255,.98);flex-direction:column;padding:16px 24px;gap:12px;border-bottom:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.nav-links.open{display:flex}
+.nav-links a{padding:8px 0;font-size:16px}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
 section{padding:40px 16px}
 .booking-form{padding:24px 16px}
 .hero-btns{flex-direction:column;align-items:center}
@@ -329,11 +338,14 @@ section{padding:40px 16px}
 <nav>
 <div class="nav-inner">
 <div class="logo">✈️ 大B舅父遊世界 Uncle Bruce GoTravel</div>
-<div class="nav-links">
-<a href="#destinations">熱門地點</a>
-<a href="#pricing">方案價錢</a>
-<a href="#booking" class="nav-cta">立即規劃</a>
-<a href="javascript:void(0)" onclick="installApp()" style="color:var(--primary);font-weight:600;font-size:14px">📲 下載APP</a>
+<button class="hamburger" id="hamburgerBtn" onclick="toggleMobileNav()" aria-label="選單" style="display:none">
+<span></span><span></span><span></span>
+</button>
+<div class="nav-links" id="navLinks">
+<a href="#destinations" onclick="closeMobileNav()">熱門地點</a>
+<a href="#pricing" onclick="closeMobileNav()">方案價錢</a>
+<a href="#booking" class="nav-cta" onclick="closeMobileNav()">立即規劃</a>
+<a href="javascript:void(0)" onclick="installApp();closeMobileNav()" style="color:var(--primary);font-weight:600;font-size:14px">📲 下載APP</a>
 </div>
 </div>
 </nav>
@@ -458,7 +470,7 @@ section{padding:40px 16px}
 <label style="display:flex;align-items:center;gap:6px;font-size:14px;padding:10px 16px;background:var(--bg);border-radius:12px;cursor:pointer;border:2px solid transparent;transition:.2s">
 <input type="checkbox" id="fGuide" onchange="toggleGuide()" style="accent-color:var(--primary)"> 需要私人導遊
 </label>
-<div id="guideOptions" style="display:none;flex:1">
+<div id="guideOptions" style="display:none;flex:1;align-items:center">
 <select id="fGuideDuration" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:14px">
 <option value="half">半日導遊（4小時）- HK$800起</option>
 <option value="full" selected>全日導遊（8小時）- HK$1,500起</option>
@@ -500,7 +512,7 @@ section{padding:40px 16px}
 <label>💬 特別要求（選填）</label>
 <textarea id="fNotes" placeholder="例如：有老人家同行、想睇日出、唔想行太多路..."></textarea>
 </div>
-<button class="submit-btn" onclick="scrollToPricing()">🚀 生成專屬行程</button>
+<button class="submit-btn" onclick="scrollToPricing()">💎 選擇方案並生成行程</button>
 </div>
 </div>
 
@@ -650,15 +662,15 @@ section{padding:40px 16px}
 </div>
 <div class="footer-col">
 <h4>❓ 常見問題</h4>
-<a href="javascript:void(0)" onclick="alert('付款後 AI 會即時為你生成旅遊計劃，約30秒完成')">幾時收到旅遊計劃？</a>
-<a href="javascript:void(0)" onclick="alert('支援 PayMe 同 Alipay HK 兩種付款方式')">有咩付款方式？</a>
-<a href="javascript:void(0)" onclick="alert('旅遊計劃由 AI 生成，僅供參考。建議出發前再確認最新資訊')">計劃準確嗎？</a>
+<a href="javascript:void(0)" onclick="showToast('付款後 AI 會即時為你生成旅遊計劃，約30秒完成')">幾時收到旅遊計劃？</a>
+<a href="javascript:void(0)" onclick="showToast('支援 PayMe 同 Alipay HK 兩種付款方式')">有咩付款方式？</a>
+<a href="javascript:void(0)" onclick="showToast('旅遊計劃由 AI 生成，僅供參考。建議出發前再確認最新資訊')">計劃準確嗎？</a>
 </div>
 <div class="footer-col">
 <h4>📧 聯絡我們</h4>
 <a href="mailto:unclebruceinstitute@gmail.com">unclebruceinstitute@gmail.com</a>
 <a href="https://t.me/UncleBruceHermes_MacMini_bot" target="_blank">Telegram Bot</a>
-<a href="javascript:void(0)" onclick="alert('所有旅遊計劃由 AI 生成，僅供參考。付款後不設退款。')">使用條款</a>
+<a href="javascript:void(0)" onclick="showToast('所有旅遊計劃由 AI 生成，僅供參考。付款後不設退款。')">使用條款</a>
 </div>
 </div>
 <p style="border-top:1px solid rgba(255,255,255,.1);padding-top:24px">✈️ 大B舅父遊世界 Uncle Bruce GoTravel © 2026 — 香港人旅遊計劃專家</p>
@@ -1321,6 +1333,424 @@ vancouver: {
   ]},
   ]},
 
+macau:{
+  flights:[
+    {airline:'噴射飛航',code:'TurboJet',from:'HKG',fromName:'香港',to:'MAC',toName:'澳門外港碼頭',depart:'08:00',arrive:'08:55',duration:'55m',price:'$175',type:'高速客輪',cabin:'經濟艙'},
+    {airline:'金光飛航',code:'Cotai Jet',from:'HKG',fromName:'香港',to:'MAC',toName:'澳門氹仔碼頭',depart:'09:00',arrive:'10:00',duration:'1h00m',price:'$175',type:'高速客輪',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'The Venetian Macao',stars:5,icon:'👑',location:'氹仔路氹金光大道',detail:'全球最大賭場度假村之一！大運河購物中心、貢多拉船',price:'HK$1,200/晚',bookUrl:'https://www.booking.com/hotel/mac/the-venetian-macao-resort.html'},
+    {name:'Wynn Palace',stars:5,icon:'👑',location:'氹仔路氹金光大道',detail:'永利皇宮！表演湖、空中纜車、花卉園藝',price:'HK$1,800/晚',bookUrl:'https://www.booking.com/hotel/mac/wynn-palace.html'},
+    {name:'新濠天地 City of Dreams',stars:5,icon:'🏨',location:'氹仔路氹金光大道',detail:'大型綜合度假村，天幕劇場必睇',price:'HK$900/晚',bookUrl:'https://www.booking.com/hotel/mac/city-of-dreams.html'},
+  ],
+  transportLinks:[
+    {icon:'🚢',title:'預訂船票',links:[{name:'噴射飛航 TurboJet',url:'https://www.turbojet.com.hk/'},{name:'金光飛航 Cotai Water Jet',url:'https://www.cotaiwaterjet.com/'}]},
+    {icon:'🚌',title:'預訂巴士',links:[{name:'澳巴 TCM',url:'https://www.tcm.com.mo/'},{name:'新時代巴士',url:'https://www.transmac.com.mo/'}]},
+  ],
+  days:[
+  {title:'氹仔・路氹金光大道',spots:[
+    {time:'10:00',endTime:'12:00',icon:'🏛️',title:'威尼斯人度假村',desc:'全球最大賭場度假村！大運河購物中心行到腳軟，貢多拉船超有feel',ticket:'購物中心免費',tip:'大運河購物中心嘅天幕好逼真，好似真係喺威尼斯',
+     transport:{icon:'🚢',title:'噴射飛航',detail:'香港上環 → 澳門外港碼頭',duration:'55分鐘',price:'$175'},
+     restaurant:null},
+    {time:'12:30',endTime:'14:00',icon:'🍽️',title:'官也街覓食',desc:'氹仔最有名美食街！手信、地道小食一條街搞掂',ticket:'免費',tip:'豬扒包、木糠布甸必食，莫義記榴槤雪糕超正',
+     transport:{icon:'🚌',title:'酒店免費巴士',detail:'威尼斯人 → 氹仔市區',duration:'10分鐘',price:'免費'},
+     restaurant:{name:'大利來記豬扒包',icon:'🥪',detail:'澳門豬扒包始祖！外脆內嫩嘅豬扒配新鮮麵包',price:'$45',time:'午餐'}},
+    {time:'14:30',endTime:'16:00',icon:'🏰',title:'永利皇宮',desc:'表演湖免費音樂水舞秀！空中纜車環湖超壯觀',ticket:'免費（纜車免費）',tip:'夜晚嘅水舞秀更加靚，建議睇完日景再返嚟',
+     transport:{icon:'🚶',title:'步行',detail:'官也街 → 永利皇宮（約15分鐘）',duration:'15分鐘',price:'免費'},
+     restaurant:null},
+    {time:'17:00',endTime:'19:30',icon:'🎰',title:'新濠天地 + 水舞間',desc:'天幕劇場「水舞間」係澳門必睇大型水上匯演！特技+舞蹈+音樂',ticket:'$580起',tip:'提早喺官網買飛有折扣，VIP位體驗更佳',
+     transport:{icon:'🚶',title:'步行',detail:'永利皇宮 → 新濠天地（5分鐘）',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'新葡京咖啡室',icon:'☕',detail:'澳門最抵食自助餐之一！海鮮、甜品超豐富',price:'$280',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🍪',name:'鉅記手信',detail:'杏仁餅、鳳凰卷、花生糖，澳門必買手信',price:'$50起',where:'官也街/大三巴街'},
+    {icon:'🧁',name:'莫義記雪糕',detail:'60年老店！貓山王榴槤雪糕+木糠布甸',price:'$30起',where:'官也街'},
+    {icon:'🥩',name:'豬扒包',detail:'澳門招牌小食，外脆內軟豬扒夾麵包',price:'$45',where:'大利來記'},
+  ]},
+  {title:'澳門半島・歷史城區',spots:[
+    {time:'09:00',endTime:'11:00',icon:'⛪',title:'大三巴牌坊 + 戀愛巷',desc:'澳門最 iconic 地標！聖保祿教堂遺址，旁邊戀愛巷打卡超靚',ticket:'免費',tip:'大三巴斜巷嘅義順牛奶公司雙皮奶必食',
+     transport:{icon:'🚌',title:'巴士',detail:'酒店 → 大三巴（約20分鐘）',duration:'20分鐘',price:'$6'},
+     restaurant:null},
+    {time:'11:00',endTime:'13:00',icon:'🏛️',title:'議事亭前地 + 玫瑰堂',desc:'世界文化遺產！葡式建築群+黃白相間嘅浪漫廣場',ticket:'免費',tip:'黃昏去光影更好，附近黃枝記雲吞麵超正',
+     transport:{icon:'🚶',title:'步行',detail:'大三巴 → 議事亭前地（5分鐘）',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'黃枝記',icon:'🍜',detail:'70年老店！竹昇雲吞麵+蝦子撈麵，澳門代表',price:'$55',time:'午餐'}},
+    {time:'14:00',endTime:'16:00',icon:'🗼',title:'旅遊塔笨豬跳',desc:'338米高！東南亞最高商業笨豬跳，挑戰你嘅膽量',ticket:'$3,488（笨豬跳）',tip:'唔敢跳都可以行空中漫步，一樣刺激',
+     transport:{icon:'🚌',title:'免費穿梭巴士',detail:'市中心 → 澳門旅遊塔',duration:'15分鐘',price:'免費'},
+     restaurant:null},
+    {time:'17:00',endTime:'19:00',icon:'🌆',title:'媽閣廟 + 路環漁村',desc:'澳門最古老廟宇！旁邊路環有安德魯蛋撻總店+彩色屋村',ticket:'免費',tip:'路環好靜好舒服，同氹仔嘅繁華形成強烈對比',
+     transport:{icon:'🚌',title:'巴士',detail:'旅遊塔 → 路環',duration:'20分鐘',price:'$6'},
+     restaurant:{name:'安德魯餅店',icon:'🥧',detail:'澳門葡撻始祖！新鮮出爐葡撻必食，外脆內滑',price:'$10/個',time:'下午茶'}},
+  ],souvenirs:[
+    {icon:'🥧',name:'安德魯蛋撻',detail:'澳門葡撻始祖！必買伴手禮',price:'$10/個',where:'路環總店'},
+    {icon:'🧧',name:'澳門文創產品',detail:'大三巴冰箱貼、明信片、葡磚紀念品',price:'$20起',where:'大三巴街'},
+  ]},
+
+  ]},
+
+busan:{
+  flights:[
+    {airline:'大韓航空',code:'KE608',from:'HKG',fromName:'香港',to:'PUS',toName:'釜山金海機場',depart:'09:35',arrive:'14:10',duration:'3h35m',price:'$2,800',type:'直航',cabin:'經濟艙'},
+    {airline:'釜山航空',code:'BX392',from:'HKG',fromName:'香港',to:'PUS',toName:'釜山金海機場',depart:'15:20',arrive:'19:50',duration:'3h30m',price:'$2,200',type:'直航',cabin:'經濟艙'},
+    {airline:'國泰航空',code:'CX418',from:'HKG',fromName:'香港',to:'PUS',toName:'釜山金海機場',depart:'08:05',arrive:'12:35',duration:'3h30m',price:'$3,100',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Paradise Hotel Busan',stars:5,icon:'👑',location:'海雲台',detail:'海雲台海景第一排！私人海灘+露天溫泉',price:'HK$900/晚',bookUrl:'https://www.booking.com/hotel/kr/paradise-busan.html'},
+    {name:'Signiel Busan',stars:5,icon:'👑',location:'海雲台',detail:'釜山最高級酒店！LCT Tower頂層，無敵海景',price:'HK$1,500/晚',bookUrl:'https://www.booking.com/hotel/kr/signiel-busan.html'},
+    {name:'Aventree Hotel Busan',stars:4,icon:'🏨',location:'西面',detail:'西面站旁！交通方便，CP值高',price:'HK$450/晚',bookUrl:'https://www.booking.com/hotel/kr/aventree-busan.html'},
+  ],
+  transportLinks:[
+    {icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/pus/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-busan/'}]},
+    {icon:'🚇',title:'釜山交通卡',links:[{name:'T-money',url:'https://www.t-money.co.kr/'},{name:'Visit Busan Pass',url:'https://www.visitbusanpass.com/'}]},
+  ],
+  days:[
+  {title:'海雲台・廣安',spots:[
+    {time:'09:00',endTime:'11:30',icon:'🏖️',title:'海雲台海灘 + 迎月路',desc:'韓國最有名海灘！白沙灘+清澈海水，迎月路散步超浪漫',ticket:'免費',tip:'清晨去人少啲，打影相超靚',
+     transport:{icon:'🚇',title:'地鐵2號線',detail:'金海機場 → 海雲台（約1小時）',duration:'60分鐘',price:'₩1,400'},
+     restaurant:null},
+    {time:'12:00',endTime:'13:30',icon:'🦐',title:'機張市場',desc:'釜山最大海鮮市場！即場食活海鮮、刺身拼盤',ticket:'免費入場',tip:'搵代客加工檔口，食完海鮮記得叫辣魚湯',
+     transport:{icon:'🚌',title:'巴士',detail:'海雲台 → 機張（約30分鐘）',duration:'30分鐘',price:'₩1,300'},
+     restaurant:{name:'機張海鮮刺身',icon:'🦀',detail:'活章魚、帝王蟹、鮑魚刺身，新鮮到震',price:'₩50,000',time:'午餐'}},
+    {time:'15:00',endTime:'17:00',icon:'🌆',title:'廣安大橋 + 海東龍宮寺',desc:'釜山地標！韓國最大海上橋樑，傍夜晚霞超靚',ticket:'免費',tip:'廣安大橋夜景係釜山必睇，記得等到亮燈',
+     transport:{icon:'🚌',title:'巴士',detail:'機張 → 廣安大橋',duration:'25分鐘',price:'₩1,300'},
+     restaurant:null},
+    {time:'18:00',endTime:'20:00',icon:'🌃',title:'廣安里海灘夜景',desc:'睇完廣安大橋日落，喺海邊食燒烤+啤酒，正到痹！',ticket:'免費',tip:'海邊好多燒烤店，食五花肉配真露燒酒',
+     transport:{icon:'🚶',title:'步行',detail:'廣安大橋 → 廣安里海灘（5分鐘）',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'廣安里烤肉街',icon:'🥩',detail:'海景燒烤！五花肉+牛肋骨+燒酒，釜山必體驗',price:'₩35,000',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🐟',name:'魚糕（魚餅）',detail:'釜山特產！札嘎其市場新鮮魚糕',price:'₩3,000起',where:'BIFF廣場/札嘎其'},
+    {icon:'🍰',name:'南浦洞芝士蛋糕',detail:'釜山超人氣甜品，入口即化',price:'₩5,000',where:'南浦洞'},
+    {icon:'🧂',name:'影島海鹽',detail:'韓國頂級海鹽，煮飯超好味',price:'₩8,000',where:'影島'},
+  ]},
+  {title:'甘川洞・太宗台',spots:[
+    {time:'09:00',endTime:'11:30',icon:'🏘️',title:'甘川洞文化村',desc:'韓國版馬丘比丘！彩色房屋疊喺山坡上，打卡聖地',ticket:'免費',tip:'一定要搵小王子雕像影相，旁邊有展望台可以睇全景',
+     transport:{icon:'🚌',title:'巴士/的士',detail:'西面 → 甘川洞（約20分鐘）',duration:'20分鐘',price:'₩1,500'},
+     restaurant:null},
+    {time:'12:00',endTime:'14:00',icon:'🍜',title:'札嘎其市場',desc:'釜山最大魚市場！二樓可以即場食刺身，一樓買海鮮',ticket:'免費',tip:'講價係必備技能，買完拎上二樓加工',
+     transport:{icon:'🚌',title:'巴士',detail:'甘川洞 → 札嘎其（約15分鐘）',duration:'15分鐘',price:'₩1,200'},
+     restaurant:{name:'札嘎其市場海鮮',icon:'🐙',detail:'活章魚+鮑魚粥+辣魚湯，釜山海鮮全席',price:'₩25,000',time:'午餐'}},
+    {time:'14:30',endTime:'17:00',icon:'🗼',title:'太宗台',desc:'影島絕壁懸崖！搭小火車睇燈塔+海蝕洞，風景壯觀',ticket:'小火車 ₩3,000',tip:'太宗台觀景台可以望到日本對馬島（天氣好嘅話）',
+     transport:{icon:'🚌',title:'巴士',detail:'札嘎其 → 太宗台（約20分鐘）',duration:'20分鐘',price:'₩1,200'},
+     restaurant:null},
+    {time:'17:30',endTime:'20:00',icon:'🎬',title:'BIFF廣場 + 南浦洞',desc:'釜山電影節主場地！街頭小吃一條街，糖餅+魚糕',ticket:'免費',tip:'BIFF廣場嘅黑糖餅（씨앗호떡）必食',
+     transport:{icon:'🚌',title:'巴士',detail:'太宗台 → BIFF廣場（約15分鐘）',duration:'15分鐘',price:'₩1,200'},
+     restaurant:{name:'南浦洞豬肉湯飯',icon:'🍲',detail:'釜山名物！濃郁豬骨湯底配白飯+泡菜，冬天必食',price:'₩8,000',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🍪',name:'黑糖餅（씨앗호떡）',detail:'BIFF廣場名物！酥脆黑糖餅包住種子餡',price:'₩1,000',where:'BIFF廣場'},
+    {icon:'👘',name:'韓服體驗',detail:'甘川洞文化村租韓服打卡，超啱影相',price:'₩15,000/2小時',where:'甘川洞文化村'},
+    {icon:'🧴',name:'韓國護膚品',detail:'Innisfree、Laneige、雪花秀，比香港平30%',price:'₩10,000起',where:'南浦洞/西面免稅店'},
+  ]},
+  {title:'海雲台深度遊',spots:[
+    {time:'09:00',endTime:'11:00',icon:'🌉',title:'海雲台 Blueline Park',desc:'海岸列車+天空艙！沿住海岸線行駛，風景超靚',ticket:'天空艙 ₩18,000',tip:'坐尾尾車廂影相最正',
+     transport:{icon:'🚇',title:'地鐵',detail:'酒店 → 海雲台',duration:'15分鐘',price:'₩1,200'},
+     restaurant:null},
+    {time:'11:30',endTime:'13:00',icon:'🏯',title:'梵魚寺',desc:'韓國四大名刹之一！千年古刹，秋天紅葉超靚',ticket:'₩3,000',tip:'行到山上面嘅大雄殿好壯觀',
+     transport:{icon:'🚇',title:'地鐵1號線',detail:'海雲台 → 梵魚寺（約30分鐘）',duration:'30分鐘',price:'₩1,300'},
+     restaurant:{name:'梵魚寺素食',icon:'🥗',detail:'寺廟素食體驗！豆腐湯+野菜+寺院泡菜',price:'₩10,000',time:'午餐'}},
+    {time:'14:30',endTime:'17:00',icon:'🛍️',title:'西面地下街 + 釜山電影街',desc:'釜山最大地下街！Shopping天堂，電影街有好多主題café',ticket:'免費',tip:'西面地下街可以行好耐，記得睇時間',
+     transport:{icon:'🚇',title:'地鐵',detail:'梵魚寺 → 西面（約20分鐘）',duration:'20分鐘',price:'₩1,200'},
+     restaurant:null},
+    {time:'18:00',endTime:'20:00',icon:'🌊',title:'The Bay 101',desc:'海雲台夜景聖地！101層大樓倒映喺水面超靚',ticket:'免費',tip:'夜晚去打卡倒影最正，旁邊有好多咖啡廳',
+     transport:{icon:'🚇',title:'地鐵',detail:'西面 → 海雲台',duration:'15分鐘',price:'₩1,200'},
+     restaurant:{name:'海雲台刀削麵',icon:'🍜',detail:'釜山刀削麵名店！蜆肉刀削麵湯頭超鮮',price:'₩8,000',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'☕',name:'釜山咖啡豆',detail:'海雲台好多精品咖啡店，手沖咖啡豆好正',price:'₩12,000',where:'海雲台'},
+    {icon:'🎎',name:'韓國零食大禮包',detail:'辛拉麵、蜂蜜牛油薯片、蟹柳條，必掃',price:'₩20,000',where:'樂天超市/Homeplus'},
+  ]},
+
+  ]},
+
+barcelona:{
+  flights:[
+    {airline:'國泰航空',code:'CX321',from:'HKG',fromName:'香港',to:'BCN',toName:'巴塞羅那El Prat機場',depart:'00:05',arrive:'08:00',duration:'13h55m',price:'$6,500',type:'直航',cabin:'經濟艙'},
+    {airline:'土耳其航空',code:'TK71',from:'HKG',fromName:'香港',to:'BCN',toName:'巴塞羅那El Prat機場',depart:'23:45',arrive:'14:30',duration:'16h45m',price:'$4,800',type:'轉機（伊斯坦堡）',cabin:'經濟艙'},
+    {airline:'阿聯酋航空',code:'EK383',from:'HKG',fromName:'香港',to:'BCN',toName:'巴塞羅那El Prat機場',depart:'21:40',arrive:'13:25',duration:'17h45m',price:'$5,200',type:'轉機（杜拜）',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Hotel Arts Barcelona',stars:5,icon:'👑',location:'海濱',detail:'巴塞羅那最高級海景酒店！44層無敵海景+米芝蓮餐廳',price:'HK$2,800/晚',bookUrl:'https://www.booking.com/hotel/es/hotel-arts-barcelona.html'},
+    {name:'W Barcelona',stars:5,icon:'👑',location:'Barceloneta海灘',detail:'帆船造型地標酒店！海景房正到痹',price:'HK$2,200/晚',bookUrl:'https://www.booking.com/hotel/es/w-barcelona.html'},
+    {name:'Hotel H10 Racó del Pi',stars:4,icon:'🏨',location:'哥特區',detail:'老城區中心！行出門口就係蘭布拉大道',price:'HK$900/晚',bookUrl:'https://www.booking.com/hotel/es/h10-raco-del-pi.html'},
+  ],
+  transportLinks:[
+    {icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/bcn/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-barcelona/'}]},
+    {icon:'🚇',title:'巴塞羅那交通',links:[{name:'T-Casual 交通卡',url:'https://www.tmb.cat/en/barcelona'},{name:'Aerobús 機場巴士',url:'https://www.aerobusbcn.com/'}]},
+  ],
+  days:[
+  {title:'高迪建築巡禮',spots:[
+    {time:'09:00',endTime:'11:30',icon:'⛪',title:'聖家堂 Sagrada Familia',desc:'高迪畢生之作！建咗140年仲未完工嘅世界遺產教堂，光影效果超震撼',ticket:'€26',tip:'一定要上塔！東面誕生塔睇日出，西面受難塔睇日落，提前官網買飛',
+     transport:{icon:'🚇',title:'地鐵L2/L5',detail:'酒店 → Sagrada Familia站',duration:'15分鐘',price:'€2.40'},
+     restaurant:null},
+    {time:'12:00',endTime:'14:00',icon:'🏛️',title:'Park Güell 奎爾公園',desc:'高迪嘅彩色瓷磚公園！馬賽克蜥蜴係巴塞羅那吉祥物',ticket:'€10',tip:'公園區域需要門票，但外面嘅花園免費，一樣好靚',
+     transport:{icon:'🚌',title:'巴士24',detail:'Sagrada Familia → Park Güell',duration:'20分鐘',price:'€2.40'},
+     restaurant:null},
+    {time:'14:30',endTime:'16:00',icon:'🍽️',title:'La Boqueria 波蓋利亞市場',desc:'蘭布拉大道上嘅百年市場！海鮮tapas+水果汁+火腿',ticket:'免費',tip:'市場入面嘅攤檔食lunch最正，Bar Pinotxo 嘅海鮮好出名',
+     transport:{icon:'🚌',title:'巴士24',detail:'Park Güell → 蘭布拉大道',duration:'25分鐘',price:'€2.40'},
+     restaurant:{name:'Bar Pinotxo',icon:'🐙',detail:'市場內百年老店！烤章魚+鷹嘴豆+炸丸子',price:'€25',time:'午餐'}},
+    {time:'17:00',endTime:'20:00',icon:'🏘️',title:'哥特區 Gothic Quarter',desc:'巴塞羅那老城區！中世紀巷弄、巴塞羅那大教堂、國王廣場',ticket:'教堂免費',tip:'迷失喺小巷入面最正，搵到好多隱世小店',
+     transport:{icon:'🚶',title:'步行',detail:'蘭布拉大道 → 哥特區（5分鐘）',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'Can Culleretes',icon:'🥘',detail:'1786年開業！巴塞羅那最古老餐廳，西班牙海鮮飯+燉肉',price:'€30',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🍷',name:'西班牙紅酒',detail:'Rioja 產區紅酒，歐洲超市超平',price:'€8起',where:'El Corte Inglés/市場'},
+    {icon:'🧀',name:'Jamón 伊比利亞火腿',detail:'西班牙國寶！36個月窖藏火腿',price:'€15起',where:'La Boqueria'},
+    {icon:'🎨',name:'高迪紀念品',detail:'聖家堂瓷磚杯墊、馬賽克蜥蜴擺設',price:'€10起',where:'聖家堂紀念品店'},
+  ]},
+  {title:'海灘・蒙特惠奇',spots:[
+    {time:'09:00',endTime:'12:00',icon:'🏖️',title:'Barceloneta海灘',desc:'巴塞羅那市區海灘！行沙灘、游水、睇街頭表演',ticket:'免費',tip:'夏天人多，早上去更舒服',
+     transport:{icon:'🚇',title:'地鐵L4',detail:'酒店 → Barceloneta站',duration:'10分鐘',price:'€2.40'},
+     restaurant:null},
+    {time:'12:30',endTime:'14:00',icon:'🦐',title:'海邊午餐',desc:'海灘旁邊嘅chiringuito（海邊酒吧），食海鮮+飲Sangria',ticket:'免費',tip:'La Mar Salada 性價比高',
+     transport:{icon:'🚶',title:'步行',detail:'海灘 → 餐廳',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'La Mar Salada',icon:'🐟',detail:'海鮮燉飯+炸魷魚+白酒蜆，地中海風味',price:'€28',time:'午餐'}},
+    {time:'15:00',endTime:'18:00',icon:'🏰',title:'蒙特惠奇山 Montjuïc',desc:'山上城堡+魔幻噴泉+加泰羅尼亞國家美術館！瞰瞰全市',ticket:'城堡 €16/噴泉免費',tip:'夜晚嘅魔幻噴泉燈光表演超正，週四至日有',
+     transport:{icon:'🚡',title:'纜車',detail:'Paral.lel站 → 蒙特惠奇山',duration:'10分鐘',price:'€13來回'},
+     restaurant:null},
+    {time:'19:00',endTime:'21:00',icon:'🌙',title:'蘭布拉大道夜遊',desc:'巴塞羅那最有名大道！街頭藝人、花店、露天餐廳',ticket:'免費',tip:'夜晚更有氣氛，但小心扒手',
+     transport:{icon:'🚇',title:'地鐵',detail:'蒙特惠奇山 → Liceu站',duration:'15分鐘',price:'€2.40'},
+     restaurant:{name:'Les Quinze Nits',icon:'🍷',detail:'蘭布拉大道旁嘅tapas名店！Patatas bravas+Gazpacho',price:'€25',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🧴',name:'La Chinata 橄欖油',detail:'西班牙頂級初榨橄欖油，煮飯超香',price:'€12',where:'El Corte Inglés'},
+    {icon:'👟',name:'Camper 鞋',detail:'西班牙本土品牌，設計獨特好著',price:'€80起',where:'Passeig de Gràcia'},
+    {icon:'🎭',name:'Flamenco 紀念品',detail:'弗拉門戈舞者磁石、扇子、明信片',price:'€5起',where:'蘭布拉大道/哥特區'},
+  ]},
+  {title:'米拉之家・足球',spots:[
+    {time:'09:00',endTime:'11:00',icon:'🏠',title:'Casa Milà 米拉之家',desc:'高迪另一傑作！波浪形石頭外牆+屋頂煙囪超有型',ticket:'€25',tip:'屋頂嘅煙囪夜晚有燈光表演，非常值得睇',
+     transport:{icon:'🚇',title:'地鐵L3/L5',detail:'酒店 → Diagonal站',duration:'10分鐘',price:'€2.40'},
+     restaurant:null},
+    {time:'11:30',endTime:'13:00',icon:'🛍️',title:'Passeig de Gràcia 購物大道',desc:'巴塞羅那嘅香榭麗舍！名牌+高迪建築集中地',ticket:'免費',tip:'Casa Batlló（巴特略之家）嘅外牆好夢幻，可以入去參觀',
+     transport:{icon:'🚶',title:'步行',detail:'米拉之家 → Passeig de Gràcia',duration:'2分鐘',price:'免費'},
+     restaurant:null},
+    {time:'14:00',endTime:'16:00',icon:'⚽',title:'Spotify Camp Nou 諾坎普球場',desc:'巴塞羅那主場！歐洲最大足球場，博物館+球場導覽',ticket:'博物館 €28',tip:'如果有比賽日就更加正，記得提前買飛',
+     transport:{icon:'🚇',title:'地鐵L3',detail:'Passeig de Gràcia → Maria Cristina/Les Corts',duration:'15分鐘',price:'€2.40'},
+     restaurant:{name:'La Pepita',icon:'🍔',detail:'超人氣漢堡tapas店！鵝肝漢堡+炸魷魚',price:'€20',time:'午餐'}},
+    {time:'17:00',endTime:'19:30',icon:'🌊',title:'Tibidabo 遊樂園',desc:'巴塞羅那最高點！百年遊樂園+聖心教堂，360度城市全景',ticket:'遊樂園 €35',tip:'搭藍色電車上山好有feel',
+     transport:{icon:'🚌',title:'巴士+纜車',detail:'市中心 → Tibidabo（約40分鐘）',duration:'40分鐘',price:'€4.50'},
+     restaurant:null},
+  ],souvenirs:[
+    {icon:'⚽',name:'巴塞球衣',detail:'Barça官方球衣+周邊產品',price:'€90起',where:'Camp Nou球迷店'},
+    {icon:'🍫',name:'西班牙Churros',detail:'油條配濃郁朱古力醬，甜蜜滋味',price:'€6',where:'La Nena'},
+    {icon:'🧴',name:'Natura Bissé 護膚品',detail:'西班牙高端護膚品牌，皇室御用',price:'€50起',where:'El Corte Inglés'},
+  ]},
+
+  ]},
+
+melbourne:{
+  flights:[
+    {airline:'國泰航空',code:'CX105',from:'HKG',fromName:'香港',to:'MEL',toName:'墨爾本Tullamarine機場',depart:'00:10',arrive:'12:00',duration:'8h50m',price:'$5,500',type:'直航',cabin:'經濟艙'},
+    {airline:'澳洲航空',code:'QF30',from:'HKG',fromName:'香港',to:'MEL',toName:'墨爾本Tullamarine機場',depart:'21:20',arrive:'09:15',duration:'8h55m',price:'$5,800',type:'直航',cabin:'經濟艙'},
+    {airline:'阿聯酋航空',code:'EK383',from:'HKG',fromName:'香港',to:'MEL',toName:'墨爾本Tullamarine機場',depart:'21:40',arrive:'14:30',duration:'13h50m',price:'$4,200',type:'轉機（杜拜）',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'Crown Towers Melbourne',stars:5,icon:'👑',location:'Southbank',detail:'墨爾本最高級酒店！Yarra河景+無邊際泳池+Crown賭場',price:'HK$2,500/晚',bookUrl:'https://www.booking.com/hotel/au/crown-towers-melbourne.html'},
+    {name:'The Langham Melbourne',stars:5,icon:'👑',location:'Southbank',detail:'英式古典奢華！河景房正到痹',price:'HK$2,000/晚',bookUrl:'https://www.booking.com/hotel/au/the-langham-melbourne.html'},
+    {name:'QT Melbourne',stars:4,icon:'🏨',location:'CBD',detail:'設計型酒店！市中心地段，行街超方便',price:'HK$900/晚',bookUrl:'https://www.booking.com/hotel/au/qt-melbourne.html'},
+  ],
+  transportLinks:[
+    {icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/mel/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-melbourne/'}]},
+    {icon:'🚃',title:'墨爾本交通',links:[{name:'Myki Card',url:'https://www.myki.com.au/'},{name:'SkyBus 機場巴士',url:'https://www.skybus.com.au/'}]},
+  ],
+  days:[
+  {title:'墨爾本市區・塗鴉巷',spots:[
+    {time:'09:00',endTime:'11:00',icon:'🎨',title:'Hosier Lane 塗鴉巷',desc:'墨爾本最有名塗鴉街！Street Art 聖地，日日都有新作品',ticket:'免費',tip:'朝早去影相最正，人少啲光線又好',
+     transport:{icon:'🚃',title:'電車',detail:'機場SkyBus → Southern Cross → 電車至Flinders Lane',duration:'45分鐘',price:'$19.50'},
+     restaurant:null},
+    {time:'11:00',endTime:'13:00',icon:'🏛️',title:'聯邦廣場 Federation Square',desc:'墨爾本地標！建築設計超有型，旁邊有NGV美術館',ticket:'免費（NGV免費常設展）',tip:'廣場經常有免費活動同展覽',
+     transport:{icon:'🚶',title:'步行',detail:'Hosier Lane → 聯邦廣場（2分鐘）',duration:'2分鐘',price:'免費'},
+     restaurant:null},
+    {time:'13:30',endTime:'15:00',icon:'🍽️',title:'Queen Victoria Market',desc:'南半球最大露天市場！海鮮、芝士、肉類、手信一條街',ticket:'免費',tip:'週三夜晚有夜市，氣氛超正',
+     transport:{icon:'🚃',title:'電車',detail:'聯邦廣場 → Queen Victoria Market',duration:'15分鐘',price:'$5.30'},
+     restaurant:{name:'維多利亞市場海鮮',icon:'🦞',detail:'新鮮龍蝦+生蠔+炸魚薯條，市場內即場食',price:'A$30',time:'午餐'}},
+    {time:'15:30',endTime:'18:00',icon:'🌳',title:'Royal Botanic Gardens 皇家植物園',desc:'佔地38公頃！Yarra河畔嘅超靚花園，行到腳軟',ticket:'免費',tip:'植物園入面嘅Tan Track行一圈好正',
+     transport:{icon:'🚌',title:'電車',detail:'市場 → 皇家植物園',duration:'20分鐘',price:'$5.30'},
+     restaurant:null},
+    {time:'18:30',endTime:'21:00',icon:'🌃',title:'Southbank 河濱晚餐',desc:'Yarra河畔晚餐！睇日落+城市夜景，Crown賭場附近好多餐廳',ticket:'免費',tip:'Crown噴泉燈光表演每晚8點開始',
+     transport:{icon:'🚌',title:'電車',detail:'皇家植物園 → Southbank',duration:'15分鐘',price:'$5.30'},
+     restaurant:{name:'The Boatbuilders Yard',icon:'🍺',detail:'Yarra河畔啤酒花園！漢堡+精釀啤酒+河景',price:'A$35',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🦘',name:'袋鼠皮製品',detail:'袋鼠皮錢包、鑰匙扣，澳洲特產',price:'A$20起',where:'Queen Victoria Market'},
+    {icon:'🧴',name:'Aesop 護膚品',detail:'澳洲天然護膚品牌！洗手液、面霜必買',price:'A$30起',where:'Aesop專門店'},
+    {icon:'☕',name:'墨爾本咖啡豆',detail:'咖啡之都！Patricia、Market Lane 咖啡豆',price:'A$15起',where:'各精品咖啡店'},
+  ]},
+  {title:'Brighton Beach・聖科達',spots:[
+    {time:'09:00',endTime:'11:00',icon:'🏖️',title:'Brighton Beach Boxes',desc:'墨爾本地標！90間彩色海灘小屋，打卡聖地',ticket:'免費',tip:'朝早去光線最好，Dendy Street Beach入口',
+     transport:{icon:'🚃',title:'火車Sandringham線',detail:'Flinders Street → Brighton Beach站',duration:'25分鐘',price:'$5.30'},
+     restaurant:null},
+    {time:'11:30',endTime:'13:30',icon:'🍽️',title:'St Kilda 聖科達海灘',desc:'墨爾本最有名海灘區！海邊步道+Luna Park+企鵝',ticket:'免費',tip:'傍晚有野生企鵝返巢，好得意',
+     transport:{icon:'🚃',title:'電車96',detail:'Brighton → St Kilda',duration:'20分鐘',price:'$5.30'},
+     restaurant:{name:'St Kilda Espy',icon:'🍔',detail:'百年歷史pub！漢堡+精釀啤酒+海景',price:'A$28',time:'午餐'}},
+    {time:'14:00',endTime:'16:00',icon:'🎢',title:'Luna Park 聖科達',desc:'百年歷史遊樂園！入口嗰個大笑面係墨爾本地標',ticket:'免費入場/遊樂設施另計',tip:'免費入場，玩遊戲先俾錢',
+     transport:{icon:'🚶',title:'步行',detail:'St Kilda海灘 → Luna Park（5分鐘）',duration:'5分鐘',price:'免費'},
+     restaurant:null},
+    {time:'17:00',endTime:'20:00',icon:'🌅',title:'St Kilda 日落 + 企鵝返巢',desc:'傍晚睇野生小企鵝返巢！喺碼頭岩石區，超可愛',ticket:'免費',tip:'日落後半小時企鵝開始返巢，唔好用閃光燈',
+     transport:{icon:'🚶',title:'步行',detail:'Luna Park → St Kilda Pier（5分鐘）',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'Donovans',icon:'🥩',detail:'聖科達最正海景餐廳！牛排+海鮮+紅酒',price:'A$60',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🐨',name:'樹熊公仔',detail:'澳洲國寶！超多款式，送禮自用都得',price:'A$15起',where:'Queen Victoria Market'},
+    {icon:'🧴',name:'Lucas Papaw 木瓜膏',detail:'澳洲萬用膏！蚊蟲叮咬、嘴唇乾裂都得',price:'A$8',where:'藥房/Coles'},
+    {icon:'🍷',name:'Yarra Valley 紅酒',detail:'墨爾本近郊產區，Pinot Noir出名',price:'A$20起',where:'酒舖/BWS'},
+  ]},
+  {title:'大洋路一日遊',spots:[
+    {time:'07:00',endTime:'09:00',icon:'🚗',title:'大洋路出發',desc:'由墨爾本出發！世界上最靚嘅海岸公路之一，全長243公里',ticket:'免費',tip:'建議自駕或者參加一日團',
+     transport:{icon:'🚌',title:'旅遊巴士',detail:'墨爾本市區 → 大洋路',duration:'2小時',price:'A$85（團費）'},
+     restaurant:null},
+    {time:'10:00',endTime:'12:00',icon:'🪨',title:'十二使徒岩 Twelve Apostles',desc:'大洋路必睇！7座巨大石灰岩柱矗立喺海中，超壯觀',ticket:'免費',tip:'日出同日落嘅光影最靚，風好大記得多著件衫',
+     transport:{icon:'🚌',title:'旅遊巴士',detail:'大洋路沿線',duration:'內含',price:'內含'},
+     restaurant:null},
+    {time:'12:30',endTime:'14:00',icon:'🍽️',title:'Apollo Bay 午餐',desc:'大洋路中間嘅海邊小鎮！新鮮海鮮+靚海景',ticket:'免費',tip:'Apollo Bay Fish Shop 嘅炸魚薯條超正',
+     transport:{icon:'🚌',title:'旅遊巴士',detail:'十二使徒岩 → Apollo Bay',duration:'45分鐘',price:'內含'},
+     restaurant:{name:'Apollo Bay Fish Shop',icon:'🐟',detail:'海邊炸魚薯條！新鮮海魚+自家製薯條',price:'A$18',time:'午餐'}},
+    {time:'15:00',endTime:'18:00',icon:'🌊',title:'Loch Ard Gorge + London Arch',desc:'大洋路其他壯觀景點！海蝕洞+天然拱門+沉船故事',ticket:'免費',tip:'Loch Ard Gorge 嘅歷史故事好悲壯',
+     transport:{icon:'🚌',title:'旅遊巴士',detail:'Apollo Bay → 景點 → 墨爾本',duration:'3小時',price:'內含'},
+     restaurant:null},
+  ],souvenirs:[
+    {icon:'🪨',name:'澳洲蛋白石',detail:'澳洲國石！Opal寶石飾品',price:'A$50起',where:'大洋路禮品店'},
+    {icon:'🦘',name:'EMU 蛋',detail:'EMU蛋殼藝術品，好特別',price:'A$30',where:'大洋路禮品店'},
+  ]},
+
+  ]},
+
+phuket:{
+  flights:[
+    {airline:'國泰航空',code:'CX751',from:'HKG',fromName:'香港',to:'HKT',toName:'布吉國際機場',depart:'08:25',arrive:'11:15',duration:'3h50m',price:'$2,500',type:'直航',cabin:'經濟艙'},
+    {airline:'香港快運',code:'UO763',from:'HKG',fromName:'香港',to:'HKT',toName:'布吉國際機場',depart:'14:50',arrive:'17:35',duration:'3h45m',price:'$1,200',type:'直航',cabin:'經濟艙'},
+    {airline:'泰國航空',code:'TG601',from:'HKG',fromName:'香港',to:'HKT',toName:'布吉國際機場',depart:'10:15',arrive:'13:00',duration:'3h45m',price:'$2,800',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'The Nai Harn Phuket',stars:5,icon:'👑',location:'奈涵海灘',detail:'布吉最靚海灘之一！私人海灣+無邊際泳池',price:'HK$1,500/晚',bookUrl:'https://www.booking.com/hotel/ph/the-nai-harn.html'},
+    {name:'Sri panwa',stars:5,icon:'👑',location:'攀瓦角',detail:'布吉最奢華度假村！360度海景+私人泳池別墅',price:'HK$3,000/晚',bookUrl:'https://www.booking.com/hotel/ph/sri-panwa.html'},
+    {name:'The Nap Patong',stars:4,icon:'🏨',location:'芭東海灘',detail:'芭東市中心！步行到海灘同酒吧街',price:'HK$500/晚',bookUrl:'https://www.booking.com/hotel/ph/the-nap-patong.html'},
+  ],
+  transportLinks:[
+    {icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/hkt/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-phuket/'}]},
+    {icon:'🚗',title:'布吉交通',links:[{name:'12Go Asia 車票',url:'https://12go.asia/'},{name:'布吉接送',url:'https://www.phuketferry.com/'}]},
+  ],
+  days:[
+  {title:'芭東海灘・市區',spots:[
+    {time:'09:00',endTime:'11:30',icon:'🏖️',title:'Patong Beach 芭東海灘',desc:'布吉最熱鬧海灘！白沙灘+清澈海水+水上活動',ticket:'免費',tip:'朝早去人少啲，可以租沙灘椅同遮',
+     transport:{icon:'🚌',title:'機場接送',detail:'機場 → 芭東海灘（約45分鐘）',duration:'45分鐘',price:'฿800'},
+     restaurant:null},
+    {time:'12:00',endTime:'14:00',icon:'🍽️',title:'芭東午餐',desc:'芭東海灘附近好多餐廳！泰國菜+海鮮+國際美食',ticket:'免費',tip:'Bangla Road 附近嘅餐廳選擇最多',
+     transport:{icon:'🚶',title:'步行',detail:'海灘 → 餐廳',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'No.6 Restaurant',icon:'🍜',detail:'布吉人氣泰國菜！冬陰功+青木瓜沙拉+芒果糯米飯',price:'฿250',time:'午餐'}},
+    {time:'14:30',endTime:'17:00',icon:'🛒',title:'Jungceylon 購物中心',desc:'芭東最大購物中心！冷氣超涼，行街shopping好正',ticket:'免費',tip:'入面有好多泰國品牌同國際品牌',
+     transport:{icon:'🚶',title:'步行',detail:'餐廳 → Jungceylon（5分鐘）',duration:'5分鐘',price:'免費'},
+     restaurant:null},
+    {time:'18:00',endTime:'22:00',icon:'🌙',title:'Bangla Road 邦拉街',desc:'布吉最夜生活街！酒吧、街頭表演、泰拳表演',ticket:'免費',tip:'Tiger Bar 同 Illuzion 係最熱門夜店',
+     transport:{icon:'🚶',title:'步行',detail:'Jungceylon → Bangla Road（3分鐘）',duration:'3分鐘',price:'免費'},
+     restaurant:{name:'Bangla Road 海鮮檔',icon:'🦀',detail:'街頭海鮮燒烤！蝦+魷魚+貝殼，新鮮燒好',price:'฿350',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🧴',name:'泰國青草藥膏',detail:'虎標萬金油！蚊蟲叮咬必備',price:'฿100',where:'Boots/屈臣氏'},
+    {icon:'🍵',name:'泰國奶茶',detail:'手標泰式奶茶粉，返去自己沖',price:'฿80',where:'Big C超市'},
+    {icon:'👜',name:'泰絲製品',detail:'泰絲圍巾、手袋，泰國特產',price:'฿300起',where:'Jungceylon'},
+  ]},
+  {title:'Phi Phi Islands 跳島',spots:[
+    {time:'07:30',endTime:'09:00',icon:'🚤',title:'出發去Phi Phi Islands',desc:'由布吉搭快船去Phi Phi群島！約1.5小時',ticket:'快船來回 ฿1,500',tip:'記得帶防水袋保護手機同銀包',
+     transport:{icon:'🚤',title:'快船',detail:'布吉碼頭 → Phi Phi Don',duration:'1.5小時',price:'฿1,500來回'},
+     restaurant:null},
+    {time:'09:30',endTime:'12:00',icon:'🏊',title:'Maya Bay 瑪雅灣',desc:'電影《The Beach》取景地！翡翠綠海水+白色沙灘，仙境級靚',ticket:'฿400',tip:'限流政策要預約，建議早上去人少啲',
+     transport:{icon:'🚤',title:'長尾船',detail:'Phi Phi Don → Maya Bay',duration:'20分鐘',price:'฿300'},
+     restaurant:null},
+    {time:'12:30',endTime:'14:00',icon:'🍽️',title:'Phi Phi Don 午餐',desc:'Phi Phi島上嘅主島！好多餐廳同咖啡店',ticket:'免費',tip:'海邊餐廳睇海景食午餐，超正',
+     transport:{icon:'🚶',title:'步行',detail:'碼頭 → 海邊餐廳',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'Unni\'s Restaurant',icon:'🥗',detail:'泰國+西式fusion！冬陰功+海鮮沙拉+新鮮果汁',price:'฿300',time:'午餐'}},
+    {time:'14:30',endTime:'17:00',icon:'🤿',title:'浮潛 + Viking Cave',desc:'Phi Phi群島浮潛！睇珊瑚+熱帶魚+海龜',ticket:'浮潛裝備 ฿200',tip:'Shark Point 可以睇到黑鰭鯊（無害嘅）',
+     transport:{icon:'🚤',title:'長尾船',detail:'Phi Phi Don → 浮潛點',duration:'15分鐘',price:'內含'},
+     restaurant:null},
+  ],souvenirs:[
+    {icon:'🐚',name:'貝殼飾品',detail:'Phi Phi島特產！貝殼項鏈、手鏈',price:'฿100起',where:'Phi Phi Don市集'},
+    {icon:'🧴',name:'泰國防曬霜',detail:'香蕉船+Biore，泰國價錢平好多',price:'฿150',where:'7-11/藥房'},
+  ]},
+  {title:'Old Town・Big Buddha',spots:[
+    {time:'09:00',endTime:'11:00',icon:'🏛️',title:'Phuket Old Town 布吉老城',desc:'布吉歷史城區！中葡式建築+彩色屋+泰式廟宇',ticket:'免費',tip:'Thalang Road 同 Soi Romanee 係最靚嘅街',
+     transport:{icon:'🚌',title:'嘟嘟車',detail:'芭東 → 布吉老城（約30分鐘）',duration:'30分鐘',price:'฿400'},
+     restaurant:null},
+    {time:'11:00',endTime:'13:00',icon:'🍽️',title:'老城午餐',desc:'老城區好多地道泰國餐廳+甜品店',ticket:'免費',tip:'Raya Restaurant 嘅泰式咖喱蟹好出名',
+     transport:{icon:'🚶',title:'步行',detail:'老城街道',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'Raya Restaurant',icon:'🦀',detail:'百年建築入面嘅泰國菜！咖喱蟹+冬陰功+芒果糯米飯',price:'฿400',time:'午餐'}},
+    {time:'14:00',endTime:'16:00',icon:'🙏',title:'Big Buddha 大佛',desc:'布吉地標！45米高白色大佛，山頂360度全景',ticket:'免費（捐款制）',tip:'著衫要遮膝蓋同膊頭，入面有免費借紗籠',
+     transport:{icon:'🚌',title:'嘟嘟車',detail:'老城 → 大佛（約25分鐘）',duration:'25分鐘',price:'฿300'},
+     restaurant:null},
+    {time:'17:00',endTime:'19:30',icon:'🌅',title:'Promthep Cape 蓬貼海角',desc:'布吉最南端！日落聖地，睇住太陽落入安達曼海',ticket:'免費',tip:'日落前1小時到，搵個好位置坐低等',
+     transport:{icon:'🚌',title:'嘟嘟車',detail:'大佛 → 蓬貼海角（約20分鐘）',duration:'20分鐘',price:'฿250'},
+     restaurant:{name:'Rawai 海鮮市場',icon:'🦐',detail:'布吉最正海鮮市場！買完海鮮代客加工',price:'฿500',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🧴',name:'泰國精油',detail:'Harnn、Thann 精油產品，泰國製造',price:'฿200起',where:'Central Festival/Jungceylon'},
+    {icon:'🍬',name:'泰國零食',detail:'小老板海苔、Pocky、榴槤乾',price:'฿50起',where:'7-11/Big C'},
+    {icon:'🙏',name:'佛牌紀念品',detail:'泰國佛牌飾品，保平安',price:'฿100起',where:'大佛紀念品店'},
+  ]},
+
+  ]},
+
+okinawa:{
+  flights:[
+    {airline:'國泰航空',code:'CX572',from:'HKG',fromName:'香港',to:'OKA',toName:'沖繩那霸機場',depart:'08:45',arrive:'12:20',duration:'2h35m',price:'$3,200',type:'直航',cabin:'經濟艙'},
+    {airline:'香港快運',code:'UO820',from:'HKG',fromName:'香港',to:'OKA',toName:'沖繩那霸機場',depart:'15:10',arrive:'18:45',duration:'2h35m',price:'$1,500',type:'直航',cabin:'經濟艙'},
+    {airline:'ANA 全日空',code:'NH872',from:'HKG',fromName:'香港',to:'OKA',toName:'沖繩那霸機場',depart:'10:30',arrive:'14:05',duration:'2h35m',price:'$3,500',type:'直航',cabin:'經濟艙'},
+  ],
+  hotels:[
+    {name:'The Ritz-Carlton Okinawa',stars:5,icon:'👑',location:'名護市',desc:'沖繩最奢華酒店！高爾夫球場+無邊際泳池+海景',price:'HK$3,000/晚',bookUrl:'https://www.booking.com/hotel/jp/the-ritz-carlton-okinawa.html'},
+    {name:'Hotel Nikko Alivila',stars:4,icon:'🏨',location:'讀谷村',desc:'西班牙殖民風格！私人海灘+日落美景',price:'HK$1,200/晚',bookUrl:'https://www.booking.com/hotel/jp/hotel-nikko-alivila.html'},
+    {name:'Hyatt Regency Seragaki Island',stars:5,icon:'👑',location:'恩納村',desc:'獨立島嶼度假村！私人海灘+水上活動',price:'HK$2,000/晚',bookUrl:'https://www.booking.com/hotel/jp/hyatt-regency-seragaki-island.html'},
+  ],
+  transportLinks:[
+    {icon:'✈️',title:'預訂機票',links:[{name:'Skyscanner',url:'https://www.skyscanner.com.hk/transport/flights/hkg/oka/'},{name:'Trip.com',url:'https://www.trip.com/flights/hong-kong-to-okinawa/'}]},
+    {icon:'🚗',title:'租車自駕',links:[{name:'Toyota Rent-a-Car',url:'https://rent.toyota.co.jp/en/'},{name:'Times Car Rental',url:'https://www.timescar-rental.com/en/'}]},
+  ],
+  days:[
+  {title:'那霸市區・首里城',spots:[
+    {time:'09:00',endTime:'11:30',icon:'🏯',title:'首里城',desc:'琉球王國王宮！世界文化遺產，紅色城堡超有氣勢',ticket:'免費（公園區域）',tip:'守禮門→歓會門→正殿行法，正殿內部要另外買飛',
+     transport:{icon:'🚝',title:'單軌列車',detail:'那霸機場 → 首里站（約30分鐘）',duration:'30分鐘',price:'¥330'},
+     restaurant:null},
+    {time:'12:00',endTime:'14:00',icon:'🍜',title:'國際通覓食',desc:'那霸最熱鬧嘅購物街！沖繩料理+手信+表演',ticket:'免費',tip:'暖簾街（平和通）入面有好多隱世小店',
+     transport:{icon:'🚶',title:'步行',detail:'首里城 → 國際通（步行+單軌，約20分鐘）',duration:'20分鐘',price:'¥200'},
+     restaurant:{name:'Jack\'s Steak House',icon:'🥩',detail:'沖繩名物！牛排定食超抵食+沙瓦（泡盛+梳打）',price:'¥1,200',time:'午餐'}},
+    {time:'14:30',endTime:'17:00',icon:'🛍️',title:'國際通深度遊',desc:'國際通全長1.6公里！第一牧志公設市場+壺屋通+波上宮',ticket:'免費',tip:'牧志市場二樓可以代客加工海鮮',
+     transport:{icon:'🚶',title:'步行',detail:'國際通全程步行',duration:'2.5小時',price:'免費'},
+     restaurant:null},
+    {time:'17:30',endTime:'20:00',icon:'🌅',title:'波上宮 + 波之上海灘',desc:'那霸市區海灘！神社+海灘+日落，一石三鳥',ticket:'免費',tip:'波上宮係沖繩最古老嘅神社，好靈驗',
+     transport:{icon:'🚶',title:'步行',detail:'國際通 → 波上宮（約15分鐘）',duration:'15分鐘',price:'免費'},
+     restaurant:{name:'琉球料理 いしぐふー',icon:'🍲',detail:'沖繩家庭料理！苦瓜炒蛋（ゴーヤーチャンプルー）+排骨麵+海葡萄',price:'¥1,500',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🍬',name:'紫薯塔（紅芋タルト）',detail:'沖繩名物！紫薯味超濃郁，由良製菓出產',price:'¥800',where:'國際通/機場'},
+    {icon:'🍺',name:'Orion 啤酒',detail:'沖繩地產啤酒！清清爽爽好啱夏天',price:'¥200',where:'便利店/超市'},
+    {icon:'🪸',name:'琉球玻璃製品',detail:'手工琉球玻璃杯、風鈴，色彩繽紛',price:'¥1,000起',where:'壺屋通/國際通'},
+  ]},
+  {title:'美麗海水族館・北部',spots:[
+    {time:'08:00',endTime:'10:00',icon:'🚗',title:'北上水族館',desc:'由那霸出發去沖繩北部！自駕約2小時，沿路風景超靚',ticket:'免費',tip:'建議租車自駕，沿途可以停多個景點',
+     transport:{icon:'🚗',title:'租車自駕',detail:'那霸 → 美麗海水族館（約2小時）',duration:'2小時',price:'¥6,000/日租車'},
+     restaurant:null},
+    {time:'10:30',endTime:'14:00',icon:'🐋',title:'美麗海水族館 Churaumi',desc:'世界級水族館！巨大黑潮之海水槽（鯨鯊+鬼蝠魟）',ticket:'¥2,180',tip:'11點/15點有餵食表演，鯨鯊食嘢超壯觀',
+     transport:{icon:'🚶',title:'步行',detail:'停車場 → 水族館',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'Ocean Blue 餐廳',icon:'🐟',detail:'水族館內餐廳！可以對住巨型水槽食午餐',price:'¥2,000',time:'午餐'}},
+    {time:'14:30',endTime:'16:30',icon:'🏖️',title:'古宇利島',desc:'沖繩版亞當夏娃島！古宇利大橋+心型岩+超靚海水',ticket:'免費',tip:'古宇利大橋揸車過去風景超震撼',
+     transport:{icon:'🚗',title:'租車',detail:'水族館 → 古宇利島（約40分鐘）',duration:'40分鐘',price:'免費'},
+     restaurant:null},
+    {time:'17:00',endTime:'19:30',icon:'🌅',title:'殘波岬燈塔',desc:'沖繩最西端！懸崖燈塔+日落+斷崖絕壁',ticket:'¥300',tip:'行到燈塔頂可以360度望海，好壯觀',
+     transport:{icon:'🚗',title:'租車',detail:'古宇利島 → 殘波岬（約1小時）',duration:'1小時',price:'免費'},
+     restaurant:{name:'浜の家',icon:'🦐',detail:'讀谷村海邊食堂！天婦羅定食+沖繩麵',price:'¥1,200',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🐠',name:'黑糖',detail:'沖繩名物！傳統製法黑糖，好甜好香',price:'¥300',where:'水族館禮品店/讀谷'},
+    {icon:'🧴',name:'沖繩護膚品',detail:'珊瑚鈣+月桃+海泥面膜，天然成分',price:'¥800起',where:'國際通/水族館'},
+    {icon:'🎶',name:'三線琴紀念品',detail:'沖繩傳統樂器！迷你版三線琴擺設',price:'¥1,500起',where:'國際通'},
+  ]},
+  {title:'中部海灘・美國村',spots:[
+    {time:'09:00',endTime:'12:00',icon:'🏖️',title:'日落海灘 Sunset Beach',desc:'沖繩中部最靚海灘！白沙灘+透明海水+水上活動',ticket:'免費',tip:'朝早去水最清，可以睇到魚',
+     transport:{icon:'🚗',title:'租車',detail:'那霸 → 中部海灘（約40分鐘）',duration:'40分鐘',price:'免費'},
+     restaurant:null},
+    {time:'12:30',endTime:'14:30',icon:'🍔',title:'美國村 American Village',desc:'美軍基地旁邊嘅購物區！美式風格+摩天輪+outlet',ticket:'免費',tip:'美浜アメリカンビレッジ入面好多餐廳',
+     transport:{icon:'🚶',title:'步行',detail:'日落海灘 → 美國村（5分鐘）',duration:'5分鐘',price:'免費'},
+     restaurant:{name:'Taco Rice Cafe Kijimuna',icon:'🌮',detail:'沖繩名物！Taco Rice（塔可飯）+Blue Seal雪糕',price:'¥800',time:'午餐'}},
+    {time:'15:00',endTime:'17:30',icon:'🐋',title:'鯨鯊觀賞船',desc:'沖繩近海睇鯨鯊！4-10月限定，超難忘體驗',ticket:'¥5,000',tip:'4-10月係季節，記得預約',
+     transport:{icon:'🚗',title:'租車',detail:'美國村 → 真栄田岬',duration:'20分鐘',price:'免費'},
+     restaurant:null},
+    {time:'18:00',endTime:'20:30',icon:'🍜',title:'沖繩料理晚餐',desc:'返到那霸食正宗沖繩料理！豬蹄+海葡萄+泡盛',ticket:'免費',tip:'壺屋通入面有好多居酒屋',
+     transport:{icon:'🚗',title:'租車',detail:'中部 → 那霸（約40分鐘）',duration:'40分鐘',price:'免費'},
+     restaurant:{name:'目利きの銀次',icon:'🐟',detail:'沖繩海鮮居酒屋！海葡萄+炒苦瓜+豬耳+泡盛',price:'¥2,500',time:'晚餐'}},
+  ],souvenirs:[
+    {icon:'🍦',name:'Blue Seal 雪糕',detail:'沖繩版哈根達斯！紫薯味必食',price:'¥300',where:'美國村/國際通'},
+    {icon:'🌶️',name:'島辣椒（島唐辛子）',detail:'沖繩特產辣椒！辣度剛好，送禮自用',price:'¥400',where:'國際通'},
+    {icon:'🍶',name:'泡盛',detail:'沖繩地酒！3年/10年窖藏，好滑',price:'¥1,500起',where:'國際通/壺屋通'},
+  ]},
+
+  ]},
+
 };
 
 // Default fallback for destinations without rich data
@@ -1550,11 +1980,9 @@ let numDays=3;
 if(start!=='待定'&&end!=='待定'){const d1=new Date(start),d2=new Date(end);numDays=Math.max(1,Math.ceil((d2-d1)/(1000*60*60*24)));}
 numDays=Math.min(numDays,7);
 const planData=PLAN_DATA[dest.id]||getDefaultPlan(dest);
-const days=planData.days.slice(0,numDays-1>planData.days.length?planData.days.length:numDays-1);
-// Ensure enough days
-while(days.length<numDays-1)days.push(planData.days[days.length%planData.days.length]);
-// First day = arrival, last day = departure
-const arrivalDay=planData.days[planData.days.length-1]||planData.days[0];
+// Middle days (Day 2 to Day N-1) start from index 1 to avoid duplicating arrival day's data
+const days=[];
+for(let i=0;i<numDays-2;i++){days.push(planData.days[(i+1)%planData.days.length]);}
 
 let html=`<div class="result-header">
 <h2>${dest.emoji} ${dest.name}旅遊計劃</h2>
@@ -1783,9 +2211,9 @@ guidePlatforms.forEach(gp=>{
 html+=`</div>`;
 
 // WhatsApp group for guide inquiry
-const waUrl=`https://wa.me/85291234567?text=${encodeURIComponent(`你好，我想查詢${destName}嘅私人導遊服務`)}`;
+const waUrl=`https://t.me/UncleBruceHermes_MacMini_bot?text=${encodeURIComponent(`我想查詢${destName}嘅私人導遊服務`)}`;
 html+=`<div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
-<a href="${waUrl}" target="_blank" class="guide-btn" style="display:inline-flex;align-items:center;gap:8px">📱 WhatsApp 查詢導遊</a>
+<a href="${waUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;background:#0088cc;color:#fff;border:none;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none">📱 Telegram 查詢導遊</a>
 <a href="https://t.me/UncleBruceHermes_MacMini_bot?text=${encodeURIComponent(`我想預約${destName}私人導遊`)}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;background:#0088cc;color:#fff;border:none;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none">✈️ Telegram 查詢</a>
 </div>`;
 html+=`</div>`;
@@ -2142,7 +2570,7 @@ if(type==='multi')renderRouteCards();
 // ============ GUIDE TOGGLE ============
 function toggleGuide(){
 const checked=document.getElementById('fGuide').checked;
-document.getElementById('guideOptions').style.display=checked?'block':'none';
+document.getElementById('guideOptions').style.display=checked?'flex':'none';
 }
 
 // ============ THEME CONTENT ============
@@ -2258,6 +2686,30 @@ function dismissInstall(){
   document.getElementById('installBanner').classList.remove('show');
   localStorage.setItem('installDismissed','1');
 }
+
+// ============ MOBILE NAV ============
+function toggleMobileNav(){
+  const btn=document.getElementById('hamburgerBtn');
+  const links=document.getElementById('navLinks');
+  btn.classList.toggle('open');
+  links.classList.toggle('open');
+}
+function closeMobileNav(){
+  const btn=document.getElementById('hamburgerBtn');
+  const links=document.getElementById('navLinks');
+  btn.classList.remove('open');
+  links.classList.remove('open');
+}
+
+// ============ TOAST NOTIFICATIONS ============
+function showToast(msg,duration=3000){
+  let container=document.getElementById('toastContainer');
+  if(!container){container=document.createElement('div');container.id='toastContainer';container.style.cssText='position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:5000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none';document.body.appendChild(container);}
+  const toast=document.createElement('div');toast.style.cssText='background:var(--text);color:#fff;padding:14px 24px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.2);animation:toastIn .3s ease;max-width:90vw;text-align:center;pointer-events:auto';toast.textContent=msg;container.appendChild(toast);
+  setTimeout(()=>{toast.style.animation='toastOut .3s ease forwards';setTimeout(()=>toast.remove(),300);},duration);
+}
+// Add toast animations
+const toastStyle=document.createElement('style');toastStyle.textContent='@keyframes toastIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}@keyframes toastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-20px)}}';document.head.appendChild(toastStyle);
 </script>
 </body>
 </html>
